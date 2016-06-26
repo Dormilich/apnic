@@ -1,0 +1,47 @@
+<?php
+// Role.php
+
+namespace Dormilich\APNIC\RPSL;
+
+use Dormilich\APNIC\Object;
+use Dormilich\APNIC\AttributeInterface as Attr;
+
+class Role extends Object
+{
+    /**
+     * Create a ROLE RIPE object.
+     * 
+     * @param string $value NIC handle. If not specified an auto-handle is used.
+     * @return self
+     */
+    public function __construct($value = 'AUTO-1')
+    {
+        $this->init();
+        $this->setType('role');
+        $this->setKey('nic-hdl', $value);
+    }
+
+    /**
+     * Defines attributes for the ROLE RIPE object. 
+     * 
+     * @return void
+     */
+    protected function init()
+    {
+        $this->create('role',     Attr::REQUIRED, Attr::SINGLE);
+        $this->create('address',  Attr::REQUIRED, Attr::MULTIPLE);
+        $this->create('country',  Attr::REQUIRED, Attr::SINGLE);
+        $this->create('phone',    Attr::OPTIONAL, Attr::MULTIPLE);
+        $this->create('fax-no',   Attr::OPTIONAL, Attr::MULTIPLE);
+        $this->create('e-mail',   Attr::REQUIRED, Attr::MULTIPLE);
+        $this->create('admin-c',  Attr::REQUIRED, Attr::MULTIPLE);
+        $this->create('tech-c',   Attr::REQUIRED, Attr::MULTIPLE);
+        $this->create('nic-hdl',  Attr::REQUIRED, Attr::SINGLE);
+        $this->create('remarks',  Attr::OPTIONAL, Attr::MULTIPLE);
+        $this->create('notify',   Attr::OPTIONAL, Attr::MULTIPLE);
+        $this->create('abuse-mailbox', Attr::OPTIONAL, Attr::MULTIPLE);
+        $this->create('mnt-by',   Attr::REQUIRED, Attr::MULTIPLE);
+        $this->create('changed',  Attr::REQUIRED, Attr::MULTIPLE);
+        $this->create('source',   Attr::REQUIRED, Attr::SINGLE);
+    }
+}
