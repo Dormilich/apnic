@@ -16,7 +16,8 @@
     "require": {},
     "autoload": {
         "psr-4": {
-            "Dormilich\\": "src/Dormilich/"
+            "Dormilich\\": "src/Dormilich/",
+            "Test\\": "tests/Test"
         }
     },
     "minimum-stability": "stable",
