@@ -1,0 +1,24 @@
+{
+    "name": "dormilich/apnic",
+    "description": "A PHP library to read/write APNIC whois object data.",
+    "type": "library",
+    "require-dev": {
+        "phpunit/phpunit": "^5.4"
+    },
+    "license": "LGPL-2.1",
+    "authors": [
+        {
+            "name": "Bertold von Dormilich",
+            "email": "Dormilich@netscape.net",
+            "role": "Developer"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Dormilich\\": "src/Dormilich/"
+        }
+    },
+    "minimum-stability": "stable",
+    "version": "dev-master"
+}
