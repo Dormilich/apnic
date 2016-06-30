@@ -14,13 +14,6 @@ interface AttributeInterface
     const SINGLE   = false;
 
     /**
-     * Get the name of the attribute.
-     * 
-     * @return string
-     */
-    public function getName();
-
-    /**
      * Whether the attribute is populated with data (i.e. not empty).
      * 
      * @return boolean
@@ -49,11 +42,11 @@ interface AttributeInterface
     public function isLocked();
 
     /**
-     * Disallow editing the attribute’s value.
+     * Get the name of the attribute.
      * 
-     * @return self
+     * @return string
      */
-    public function lock();
+    public function getName();
 
     /**
      * Get the value(s) of the attribute. Depending on the cardinality of the 

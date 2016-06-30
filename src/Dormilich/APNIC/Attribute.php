@@ -5,7 +5,7 @@ namespace Dormilich\APNIC;
 
 use Dormilich\APNIC\Exceptions\InvalidDataTypeException;
 
-class Attribute implements AttributeInterface
+class Attribute implements AttributeInterface, ArrayInterface, \Countable, \JsonSerializable
 {
     /**
      * @var string
@@ -33,6 +33,11 @@ class Attribute implements AttributeInterface
     protected $locked = false;
 
     /**
+     * @var callable 
+     */
+    protected $callback;
+
+    /**
      * Object constructor.
      * 
      * Note:
@@ -44,7 +49,7 @@ class Attribute implements AttributeInterface
      * @param boolean $multiple If the attribute allows multiple values.
      * @return self
      */
-    public function __construct($name, $mandatory, $multiple)
+    public function __construct( $name, $mandatory, $multiple )
     {
         $this->name      = (string) $name;
         $this->mandatory = (bool) $mandatory;
@@ -68,7 +73,7 @@ class Attribute implements AttributeInterface
      */
     public function isDefined()
     {
-        return (count($this->value) > 0);
+        return ( count( $this->value ) > 0 );
     }
 
     /**
@@ -114,6 +119,22 @@ class Attribute implements AttributeInterface
     }
 
     /**
+     * Set the transformer/validator callback that the input value is applied to. 
+     * Validating callbacks should throw an exception if the input is invalid. 
+     * The callback must return the value if it is valid.
+     * 
+     * @param callable $callback The callback function is passed two arguments: 
+     *          The value to be processed and the list of already set values.
+     * @return self
+     */
+    public function apply( callable $callback )
+    {
+        $this->callback = $callback;
+
+        return $this;
+    }
+
+    /**
      * Get the current value(s) of the attribute.
      * If the value is unset NULL is returned, if the attribute
      * only allows a single value, that value is returned, otherwise an array.
@@ -122,30 +143,31 @@ class Attribute implements AttributeInterface
      */
     public function getValue()
     {
-        if (count($this->value) === 0) {
+        if ( count( $this->value ) === 0 ) {
             return NULL;
         }
 
-        if (!$this->multiple) {
-            return reset($this->value);
+        if ( $this->multiple ) {
+            return $this->value;
         }
 
-        return $this->value;
+        return reset( $this->value );
     }
 
     /**
      * Set the value(s) of the attribute. Each value must be either a scalar 
-     * or a stringifiable object.
+     * or a stringifiable object. Passing an array to a single-valued attribute 
+     * will cause a data type error. 
      * 
      * @param mixed $value A string or stringifyable object or an array thereof.
      * @return self
      * @throws InvalidDataTypeException Invalid data type of the value(s).
      */
-    public function setValue($value)
+    public function setValue( $value )
     {
-        if (!$this->locked or count($this->value) === 0) {
+        if ( !$this->locked or count( $this->value ) === 0 ) {
             $this->value = [];
-            $this->addValue($value);
+            $this->addValue( $value );
         }
 
         return $this;
@@ -153,31 +175,37 @@ class Attribute implements AttributeInterface
 
     /**
      * Add value(s) to the attribute. If the attribute does not allow multiple 
-     * values the value is replaced instead. The value(s) must be stringifiable.
+     * values the value is replaced instead. The value(s) must be stringifiable. 
+     * 
      * If NULL is passed, execution is skipped. That is, `setValue(NULL)` will 
-     * reset the Attribute while `addValue(NULL)` has no effect.
+     * reset the Attribute while `addValue(NULL)` has no effect. Passing an 
+     * array to a single-valued attribute will cause a data type error. 
+     * 
+     * For single-valued attributes `addValue()` and `setValue()` work identically. 
      * 
      * @param mixed $value A string or stringifyable object or an array thereof.
      * @return self
      * @throws InvalidDataTypeException Invalid data type of the value(s).
      */
-    public function addValue($value)
+    public function addValue( $value )
     {
-        if (NULL === $value) {
+        if ( NULL === $value ) {
             return $this;
         }
 
-        if ($this->locked and count($this->value) > 0) {
+        if ( $this->locked and count( $this->value ) > 0 ) {
             return $this;
         }
 
-        if (!$this->multiple) {
-            $this->value = [ $this->convert($value) ];
-            return $this;
+        // wrapping the supposedly-single value in an array makes sure that 
+        // only a single iteration is done, even if an iterable is passed
+        if ( !$this->multiple ) {
+            $this->value = [];
+            $value = [ $value ];
         }
 
-        foreach ($this->loop($value) as $v) {
-            $this->value[] = $this->convert($v);
+        foreach ( $this->loop( $value ) as $v ) {
+            $this->value[] = $this->convert( $v );
         }
  
         return $this;
@@ -189,38 +217,104 @@ class Attribute implements AttributeInterface
      * @param mixed $value 
      * @return array|Traversable
      */
-    protected function loop($value)
+    protected function loop( $value )
     {
-        if (is_array($value)) {
+        if ( is_array( $value ) ) {
             return $value;
         }
-        if ($value instanceof \Traversable) {
+        if ( $value instanceof \Traversable ) {
             return $value;
         }
-        return [$value];
+        return [ $value ];
     }
 
     /**
-     * Converts a single value to a string. This method may be extended to add 
-     * further value validation.
+     * Entry point for data transformation/validation.
+     * 
+     * @param mixed $value 
+     * @return string
+     */
+    protected function convert( $value )
+    {
+        $value = $this->run( $value );
+        $value = $this->stringify( $value );
+
+        return $value;
+    }
+
+    /**
+     * If a data transformer is given, apply it to the input value (before 
+     * stringification).
+     * 
+     * @param mixed $input 
+     * @return mixed
+     */
+    protected function run( $input )
+    {
+        if ( is_callable( $this->callback ) ) {
+            return call_user_func( $this->callback, $input, $this->value );
+        }
+        return $input;
+    }
+
+    /**
+     * Converts a single value to a string. 
      * 
      * @param mixed $value A string or stringifyable object.
      * @return string Converted value.
      * @throws InvalidDataTypeException Invalid data type of the value(s).
      */
-    protected function convert($value)
+    final protected function stringify( $value )
     {
-        if (true === $value) {
+        if ( true === $value ) {
             return 'true';
         }
-        if (false === $value) {
+        if ( false === $value ) {
             return 'false';
         }
-        if (is_scalar($value) or (is_object($value) and method_exists($value, '__toString'))) {
+        if ( is_scalar( $value ) or (is_object( $value ) and method_exists( $value, '__toString' ) ) ) {
             return (string) $value;
         }
 
-        $msg = sprintf('The [%s] attribute does not allow the %s data type.', $this->name, gettype($value));
-        throw new InvalidDataTypeException($msg);
+        $msg = sprintf( 'The [%s] attribute does not allow the %s data type.', $this->name, gettype( $value ) );
+        throw new InvalidDataTypeException( $msg );
+    }
+
+    /**
+     * Number of values assigned.
+     * 
+     * @see http://php.net/Countable
+     * @return integer
+     */
+    public function count()
+    {
+        return count( $this->value );
+    }
+
+    /**
+     * Convert the list of values into a name+value array.
+     * 
+     * @return array
+     */
+    public function toArray()
+    {
+        $data = array_filter( $this->value, 'strlen' );
+        $data = array_map(function ( $value ) {
+            return [
+                'name'  => $this->name,
+                'value' => $value,
+            ];
+        }, $data );
+
+        return $data;
+    }
+
+    /**
+     * @see http://php.net/JsonSerializable
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        return $this->toArray();
     }
 }
