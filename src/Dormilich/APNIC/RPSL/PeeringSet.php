@@ -5,11 +5,12 @@ namespace Dormilich\APNIC\RPSL;
 
 use Dormilich\APNIC\Object;
 use Dormilich\APNIC\AttributeInterface as Attr;
+use Dormilich\APNIC\Exceptions\InvalidValueException;
 
 class PeeringSet extends Object
 {
     /**
-     * Create a PEERING-SET RIPE object.
+     * Create a PEERING-SET RPSL object.
      * 
      * @param string $value The name of the set.
      * @return self
@@ -22,7 +23,7 @@ class PeeringSet extends Object
     }
 
     /**
-     * Defines attributes for the PEERING-SET RIPE object. 
+     * Defines attributes for the PEERING-SET RPSL object. 
      * 
      * @return void
      */
@@ -39,6 +40,29 @@ class PeeringSet extends Object
         $this->create('mnt-by',      Attr::REQUIRED, Attr::MULTIPLE);
         $this->create('mnt-lower',   Attr::OPTIONAL, Attr::MULTIPLE);
         $this->create('changed',     Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('source',      Attr::REQUIRED, Attr::SINGLE);
+        $this->create('source',      Attr::REQUIRED, Attr::SINGLE)->apply('strtoupper');
+    }
+
+    /**
+     * Check if any of the required Attributes or their combinations are undefined.
+     * 
+     * @return boolean
+     */
+    public function isValid()
+    {
+        $peer4 = $this->getAttribute('peering')->isDefined();
+        $peer6 = $this->getAttribute('mp-peering')->isDefined();
+
+        return parent::isValid() and ( $peer4 or $peer6 );
+    }
+
+    public function peeringSet( $input )
+    {
+        $input = strtoupper( $input );
+        if ( strpos( $input, 'PRNG-' ) === 0) {
+            return $input;
+        }
+
+        throw new InvalidValueException( 'Invalid peering-set name' );
     }
 }

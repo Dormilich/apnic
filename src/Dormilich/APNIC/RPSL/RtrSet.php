@@ -9,7 +9,7 @@ use Dormilich\APNIC\AttributeInterface as Attr;
 class RtrSet extends Object
 {
     /**
-     * Create a RTR-SET RIPE object.
+     * Create a RTR-SET RPSL object.
      * 
      * @param string $value The name of the set.
      * @return self
@@ -22,7 +22,7 @@ class RtrSet extends Object
     }
 
     /**
-     * Defines attributes for the RTR-SET RIPE object. 
+     * Defines attributes for the RTR-SET RPSL object. 
      * 
      * @return void
      */
@@ -40,6 +40,6 @@ class RtrSet extends Object
         $this->create('mnt-by',      Attr::REQUIRED, Attr::MULTIPLE);
         $this->create('mnt-lower',   Attr::OPTIONAL, Attr::MULTIPLE);
         $this->create('changed',     Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('source',      Attr::REQUIRED, Attr::SINGLE);
+        $this->create('source',      Attr::REQUIRED, Attr::SINGLE)->apply('strtoupper');
     }
 }

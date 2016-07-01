@@ -9,7 +9,7 @@ use Dormilich\APNIC\AttributeInterface as Attr;
 class Person extends Object
 {
     /**
-     * Create a PERSON RIPE object.
+     * Create a PERSON RPSL object.
      * 
      * @param string $value NIC handle. If not specified an auto-handle is used.
      * @return self
@@ -22,7 +22,7 @@ class Person extends Object
     }
 
     /**
-     * Defines attributes for the PERSON RIPE object. 
+     * Defines attributes for the PERSON RPSL object. 
      * 
      * @return void
      */
@@ -34,12 +34,32 @@ class Person extends Object
         $this->create('phone',   Attr::REQUIRED, Attr::MULTIPLE);
         $this->create('fax-no',  Attr::OPTIONAL, Attr::MULTIPLE);
         $this->create('e-mail',  Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('nic-hdl', Attr::REQUIRED, Attr::SINGLE);
+        $this->create('nic-hdl', Attr::REQUIRED, Attr::SINGLE)->apply('strtoupper');
         $this->create('remarks', Attr::OPTIONAL, Attr::MULTIPLE);
         $this->create('notify',  Attr::OPTIONAL, Attr::MULTIPLE);
         $this->create('abuse-mailbox', Attr::OPTIONAL, Attr::MULTIPLE);
         $this->create('mnt-by',  Attr::REQUIRED, Attr::MULTIPLE);
         $this->create('changed', Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('source',  Attr::REQUIRED, Attr::SINGLE);
+        $this->create('source',  Attr::REQUIRED, Attr::SINGLE)->apply('strtoupper');
+    }
+
+    public function phone( $input )
+    {
+        return $this->validatePhone( $input );
+    }
+
+    public function faxNo( $input )
+    {
+        return $this->validatePhone( $input );
+    }
+
+    public function eMail( $input )
+    {
+        return $this->validateEmail( $input );
+    }
+
+    public function abuseMailbox( $input )
+    {
+        return $this->validateEmail( $input );
     }
 }

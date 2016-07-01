@@ -22,7 +22,7 @@ class AsBlock extends Object
     }
 
     /**
-     * Defines attributes for the AS-BLOCK RIPE object. 
+     * Defines attributes for the AS-BLOCK RPSL object. 
      * 
      * @return void
      */
@@ -30,6 +30,7 @@ class AsBlock extends Object
     {
         $this->create('as-block',  Attr::REQUIRED, Attr::SINGLE);
         $this->create('descr',     Attr::OPTIONAL, Attr::MULTIPLE);
+        $this->create('country',   Attr::OPTIONAL, Attr::SINGLE);
         $this->create('remarks',   Attr::OPTIONAL, Attr::MULTIPLE);
         $this->create('tech-c',    Attr::REQUIRED, Attr::MULTIPLE);
         $this->create('admin-c',   Attr::REQUIRED, Attr::MULTIPLE);
@@ -37,6 +38,6 @@ class AsBlock extends Object
         $this->create('mnt-lower', Attr::OPTIONAL, Attr::MULTIPLE);
         $this->create('mnt-by',    Attr::REQUIRED, Attr::MULTIPLE);
         $this->create('changed',   Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('source',    Attr::REQUIRED, Attr::SINGLE);
+        $this->create('source',    Attr::REQUIRED, Attr::SINGLE)->apply('strtoupper');
     }
 }

@@ -425,15 +425,4 @@ abstract class Object implements ObjectInterface, ArrayInterface, \ArrayAccess, 
 
         throw new InvalidValueException( 'Invalid email or date format' );
     }
-
-    /**
-     * Helper callback for the 'source' attribute. Converts the input to upper-case.
-     * 
-     * @param string $input 
-     * @return string
-     */
-    public function source( $input )
-    {
-        return strtoupper( $input );
-    }
 }

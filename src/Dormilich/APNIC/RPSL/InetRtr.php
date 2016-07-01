@@ -5,11 +5,12 @@ namespace Dormilich\APNIC\RPSL;
 
 use Dormilich\APNIC\Object;
 use Dormilich\APNIC\AttributeInterface as Attr;
+use Dormilich\APNIC\Exceptions\InvalidValueException;
 
 class InetRtr extends Object
 {
     /**
-     * Create a router (INET-RTR) RIPE object.
+     * Create a router (INET-RTR) RPSL object.
      * 
      * @param string $value The DNS name.
      * @return self
@@ -22,7 +23,7 @@ class InetRtr extends Object
     }
 
     /**
-     * Defines attributes for the INET-RTR RIPE object. 
+     * Defines attributes for the INET-RTR RPSL object. 
      * 
      * @return void
      */
@@ -43,6 +44,15 @@ class InetRtr extends Object
         $this->create('notify',    Attr::OPTIONAL, Attr::MULTIPLE);
         $this->create('mnt-by',    Attr::REQUIRED, Attr::MULTIPLE);
         $this->create('changed',   Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('source',    Attr::REQUIRED, Attr::SINGLE);
+        $this->create('source',    Attr::REQUIRED, Attr::SINGLE)->apply('strtoupper');
+    }
+
+    public function localAs( $input )
+    {
+        if ( preg_match( '~^AS\d+$~', $input ) ) {
+            return $input;
+        }
+
+        throw new InvalidValueException( 'Invalid AS number' );
     }
 }

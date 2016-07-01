@@ -5,11 +5,12 @@ namespace Dormilich\APNIC\RPSL;
 
 use Dormilich\APNIC\Object;
 use Dormilich\APNIC\AttributeInterface as Attr;
+use Dormilich\APNIC\Exceptions\InvalidValueException;
 
 class Route extends Object
 {
     /**
-     * Create a ROUTE RIPE object.
+     * Create a ROUTE RPSL object.
      * 
      * @param string $value The IPv4 address prefix of the route.
      *      Forms a combined primary key with the 'origin' attribute.
@@ -23,7 +24,7 @@ class Route extends Object
     }
 
     /**
-     * Defines attributes for the ROUTE RIPE object. 
+     * Defines attributes for the ROUTE RPSL object. 
      * 
      * @return void
      */
@@ -46,6 +47,32 @@ class Route extends Object
         $this->create('mnt-routes',   Attr::OPTIONAL, Attr::MULTIPLE);
         $this->create('mnt-by',       Attr::REQUIRED, Attr::MULTIPLE);
         $this->create('changed',      Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('source',       Attr::REQUIRED, Attr::SINGLE);
+        $this->create('source',       Attr::REQUIRED, Attr::SINGLE)->apply('strtoupper');
+    }
+
+    public function route( $input )
+    {
+        if ( strpos( $input, '/' ) ) {
+            list( $ip, $length ) = explode( '/', $input, 2 );
+
+            $ip = filter_var( $ip, \FILTER_VALIDATE_IP, \FILTER_FLAG_IPV4 );
+            $length = filter_var( $length, \FILTER_VALIDATE_INT, 
+                [ 'options' => [ 'min_range' => 0, 'max_range' => 128 ] ] );
+
+            if ( $ip and is_int( $length ) ) {
+                return $input;
+            }
+        }
+
+        throw new InvalidValueException( 'Invalid IPv4 route' );
+    }
+
+    public function origin( $input )
+    {
+        if ( preg_match( '~^AS\d+$~', $input ) ) {
+            return $input;
+        }
+
+        throw new InvalidValueException( 'Invalid AS number' );
     }
 }

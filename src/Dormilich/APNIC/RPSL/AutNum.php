@@ -5,6 +5,7 @@ namespace Dormilich\APNIC\RPSL;
 
 use Dormilich\APNIC\Object;
 use Dormilich\APNIC\AttributeInterface as Attr;
+use Dormilich\APNIC\Exceptions\InvalidValueException;
 
 /**
  * Be aware that the 'sponsoring-org' and 'status' attributes 
@@ -13,7 +14,7 @@ use Dormilich\APNIC\AttributeInterface as Attr;
 class AutNum extends Object
 {
     /**
-     * Create an AUTONOMOUS NUMBER (AUT-NUM) RIPE object.
+     * Create an AUTONOMOUS NUMBER (AUT-NUM) RPSL object.
      * 
      * @param string $value The ASN.
      * @return self
@@ -26,7 +27,7 @@ class AutNum extends Object
     }
 
     /**
-     * Defines attributes for the AUT-NUM RIPE object. 
+     * Defines attributes for the AUT-NUM RPSL object. 
      * 
      * @return void
      */
@@ -49,6 +50,16 @@ class AutNum extends Object
         $this->create('mnt-by',     Attr::REQUIRED, Attr::MULTIPLE);
         $this->create('mnt-irt',    Attr::REQUIRED, Attr::MULTIPLE);
         $this->create('changed',    Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('source',     Attr::REQUIRED, Attr::SINGLE);
+        $this->create('source',     Attr::REQUIRED, Attr::SINGLE)->apply('strtoupper');
+    }
+
+    public function autNum( $input )
+    {
+        $input = strtoupper( $input );
+        if ( preg_match( '~^AS\d+$~', $input ) ) {
+            return $input;
+        }
+
+        throw new InvalidValueException( 'Invalid AS number' );
     }
 }

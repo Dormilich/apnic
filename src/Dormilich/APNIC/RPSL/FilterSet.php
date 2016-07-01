@@ -5,11 +5,12 @@ namespace Dormilich\APNIC\RPSL;
 
 use Dormilich\APNIC\Object;
 use Dormilich\APNIC\AttributeInterface as Attr;
+use Dormilich\APNIC\Exceptions\InvalidValueException;
 
 class FilterSet extends Object
 {
     /**
-     * Create a FILTER-SET RIPE object.
+     * Create a FILTER-SET RPSL object.
      * 
      * @param string $value The name of the set (of routers).
      * @return self
@@ -22,7 +23,7 @@ class FilterSet extends Object
     }
 
     /**
-     * Defines attributes for the FILTER-SET RIPE object. 
+     * Defines attributes for the FILTER-SET RPSL object. 
      * 
      * @return void
      */
@@ -39,6 +40,16 @@ class FilterSet extends Object
         $this->create('mnt-by',      Attr::REQUIRED, Attr::MULTIPLE);
         $this->create('mnt-lower',   Attr::OPTIONAL, Attr::MULTIPLE);
         $this->create('changed',     Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('source',      Attr::REQUIRED, Attr::SINGLE);
+        $this->create('source',      Attr::REQUIRED, Attr::SINGLE)->apply('strtoupper');
+    }
+
+    public function filterSet( $input )
+    {
+        $input = strtoupper( $input );
+        if ( strpos( $input, 'FLTR-' ) === 0) {
+            return $input;
+        }
+
+        throw new InvalidValueException( 'Invalid filter-set name' );
     }
 }

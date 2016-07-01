@@ -9,7 +9,7 @@ use Dormilich\APNIC\AttributeInterface as Attr;
 class RouteSet extends Object
 {
     /**
-     * Create a ROUTE-SET RIPE object.
+     * Create a ROUTE-SET RPSL object.
      * 
      * @param string $value The name of the set (of route prefixes).
      * @return self
@@ -22,7 +22,7 @@ class RouteSet extends Object
     }
 
     /**
-     * Defines attributes for the ROUTE-SET RIPE object. 
+     * Defines attributes for the ROUTE-SET RPSL object. 
      * 
      * @return void
      */
@@ -40,6 +40,6 @@ class RouteSet extends Object
         $this->create('mnt-by',      Attr::REQUIRED, Attr::MULTIPLE);
         $this->create('mnt-lower',   Attr::OPTIONAL, Attr::MULTIPLE);
         $this->create('changed',     Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('source',      Attr::REQUIRED, Attr::SINGLE);
+        $this->create('source',      Attr::REQUIRED, Attr::SINGLE)->apply('strtoupper');
     }
 }

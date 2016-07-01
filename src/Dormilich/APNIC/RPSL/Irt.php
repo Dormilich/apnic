@@ -9,7 +9,7 @@ use Dormilich\APNIC\AttributeInterface as Attr;
 class Irt extends Object
 {
     /**
-     * Create an incident response team (IRT) RIPE object.
+     * Create an incident response team (IRT) RPSL object.
      * 
      * @param string $value The name for the response team.
      * @return self
@@ -22,7 +22,7 @@ class Irt extends Object
     }
 
     /**
-     * Defines attributes for the IRT RIPE object. 
+     * Defines attributes for the IRT RPSL object. 
      * 
      * @return void
      */
@@ -44,6 +44,31 @@ class Irt extends Object
         $this->create('notify',     Attr::OPTIONAL, Attr::MULTIPLE);
         $this->create('mnt-by',     Attr::REQUIRED, Attr::MULTIPLE);
         $this->create('changed',    Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('source',     Attr::REQUIRED, Attr::SINGLE);
+        $this->create('source',     Attr::REQUIRED, Attr::SINGLE)->apply('strtoupper');
+    }
+
+    public function phone( $input )
+    {
+        return $this->validatePhone( $input );
+    }
+
+    public function faxNo( $input )
+    {
+        return $this->validatePhone( $input );
+    }
+
+    public function eMail( $input )
+    {
+        return $this->validateEmail( $input );
+    }
+
+    public function abuseMailbox( $input )
+    {
+        return $this->validateEmail( $input );
+    }
+
+    public function irtNfy( $input )
+    {
+        return $this->validateEmail( $input );
     }
 }

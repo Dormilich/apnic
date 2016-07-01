@@ -9,7 +9,7 @@ use Dormilich\APNIC\AttributeInterface as Attr;
 class AsSet extends Object
 {
     /**
-     * Create an AS-SET RIPE object.
+     * Create an AS-SET RPSL object.
      * 
      * @param string $value The name of the AS-Set.
      * @return self
@@ -22,7 +22,7 @@ class AsSet extends Object
     }
 
     /**
-     * Defines attributes for the AS-SET RIPE object. 
+     * Defines attributes for the AS-SET RPSL object. 
      * 
      * @return void
      */
@@ -30,6 +30,7 @@ class AsSet extends Object
     {
         $this->create('as-set',      Attr::REQUIRED, Attr::SINGLE);
         $this->create('descr',       Attr::REQUIRED, Attr::MULTIPLE);
+        $this->create('country',     Attr::OPTIONAL, Attr::SINGLE);
         $this->create('members',     Attr::OPTIONAL, Attr::MULTIPLE);
         $this->create('mbrs-by-ref', Attr::OPTIONAL, Attr::MULTIPLE);
         $this->create('remarks',     Attr::OPTIONAL, Attr::MULTIPLE);
@@ -39,6 +40,6 @@ class AsSet extends Object
         $this->create('mnt-by',      Attr::REQUIRED, Attr::MULTIPLE);
         $this->create('mnt-lower',   Attr::OPTIONAL, Attr::MULTIPLE);
         $this->create('changed',     Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('source',      Attr::REQUIRED, Attr::SINGLE);
+        $this->create('source',      Attr::REQUIRED, Attr::SINGLE)->apply('strtoupper');
     }
 }

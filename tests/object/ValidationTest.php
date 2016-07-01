@@ -5,14 +5,6 @@ use Dormilich\APNIC\AttributeInterface as Attr;
 
 class ValidationTest extends PHPUnit_Framework_TestCase
 {
-    public function testSourceValidator()
-    {
-        $obj = new Object('foo');
-        $obj['source'] = 'apnic';
-
-        $this->assertSame('APNIC', $obj['source']);
-    }
-
     public function testChangedValidatorWithEmail()
     {
         $email = 'test@example.com';
