@@ -123,13 +123,15 @@ class Attribute implements AttributeInterface, ArrayInterface, \Countable, \Json
      * Validating callbacks should throw an exception if the input is invalid. 
      * The callback must return the value if it is valid.
      * 
-     * @param callable $callback The callback function is passed two arguments: 
-     *          The value to be processed and the list of already set values.
+     * @param callable $callback The callback function is passed the input value 
+     *          as parameter and must return a value unless it throws an exception. 
      * @return self
      */
     public function apply( callable $callback )
     {
-        $this->callback = $callback;
+        if ( !is_callable( $this->callback ) ) {
+            $this->callback = $callback;
+        }
 
         return $this;
     }
@@ -252,7 +254,7 @@ class Attribute implements AttributeInterface, ArrayInterface, \Countable, \Json
     protected function run( $input )
     {
         if ( is_callable( $this->callback ) ) {
-            return call_user_func( $this->callback, $input, $this->value );
+            return call_user_func( $this->callback, $input );
         }
         return $input;
     }

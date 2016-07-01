@@ -206,10 +206,10 @@ class AttributeTest extends PHPUnit_Framework_TestCase
 
     // input validation
 
-    public function testAttributeValueValidationViaCallback()
+    public function testAttributeSetValueRunsCallback()
     {
         $attr = new Attribute('test', Attr::REQUIRED, Attr::SINGLE);
-        $attr->apply(function ($input) { return strtoupper($input); });
+        $attr->apply('strtoupper');
         $attr->setValue('x');
 
         $this->assertSame('X', $attr->getValue());
@@ -229,17 +229,14 @@ class AttributeTest extends PHPUnit_Framework_TestCase
         $this->assertSame('TEST', $attr->getValue());
     }
 
-    public function testValidatorReceivesAttributeValues()
+    public function testValidatorCannotBeRedefined()
     {
-        $attr = new Attribute('foo', Attr::REQUIRED, Attr::MULTIPLE);
-        $attr->setValue([1, 2]);
-        $count = count($attr);
+        $attr = new Attribute('test', Attr::REQUIRED, Attr::SINGLE);
+        $attr->apply('strtoupper');
+        $attr->apply('strtolower');
+        $attr->setValue('xY');
 
-        $attr->apply(function ($input, $values) use ($count) {
-            $this->assertInternalType('array', $input);
-            $this->assertCount($count, $values);
-            return $input;
-        });
+        $this->assertSame('XY', $attr->getValue());
     }
 
     // value locking
