@@ -6,9 +6,9 @@ namespace Dormilich\APNIC;
 interface ObjectInterface
 {
     /**
-     * Get the name of the current RIPE object.
+     * Get the name of the current RPSL object.
      * 
-     * @return string RIPE object name.
+     * @return string RPSL object name.
      */
     public function getType();
 
@@ -36,6 +36,13 @@ interface ObjectInterface
      * @throws InvalidAttributeException Invalid argument name.
      */
     public function getAttribute($name);
+
+    /**
+     * Get the keys for the attributes (no matter whether they’re defined or not).
+     * 
+     * @return array
+     */
+    public function getAttributeNames();
 
     /**
      * Check if any of the required Attributes is undefined.

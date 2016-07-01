@@ -3,28 +3,27 @@
 
 namespace Dormilich\APNIC;
 
-use Dormilich\APNIC\AttributeInterface as Attr;
 use Dormilich\APNIC\Exceptions\IncompleteRPSLObjectException;
 use Dormilich\APNIC\Exceptions\InvalidAttributeException;
 use Dormilich\APNIC\Exceptions\InvalidDataTypeException;
 use Dormilich\APNIC\Exceptions\InvalidValueException;
 
 /**
- * The prototype for every RIPE object class. 
+ * The prototype for every RPSL object class. 
  * 
  * A child class must
  *  1) define a primary key and type (which are usually the same)
  *  2) set the class name to thats name using camel case (e.g. domain => Domain, aut-num => AutNum)
- *  3) define the attributes for this RIPE object
+ *  3) define the attributes for this RPSL object
  * 
  * A child class should
  *  - set the primary key on instantiation
  *  - set a "VERSION" constant
  */
-abstract class Object implements ObjectInterface, \ArrayAccess, \IteratorAggregate, \Countable
+abstract class Object implements ObjectInterface, ArrayInterface, \ArrayAccess, \IteratorAggregate, \Countable
 {
     /**
-     * The type of the object as found in the WHOIS response object’s 'type' parameter.
+     * The type of the object.
      * @var string
      */
     private $type = NULL;
@@ -41,12 +40,96 @@ abstract class Object implements ObjectInterface, \ArrayAccess, \IteratorAggrega
      */
     private $attributes = [];
 
+// --- OBJECT SETUP ---------------
+
     /**
-     * Define the attributes for this object according to the RIPE DB docs.
+     * Define the attributes for this object according to the RPSL DB docs.
      * 
      * @return void
      */
     abstract protected function init();
+
+    /**
+     * Set the name of the primary key.
+     * 
+     * @param string $value The name of the primary key.
+     * @return self
+     * @throws LogicException Value is empty
+     */
+    protected function setKey( $name, $value )
+    {
+        if ( NULL === $this->primaryKey ) {
+            $this->primaryKey = $name;
+            $this->getAttribute( $name )->setValue( $value )->lock();
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get the name of the current RPSL object.
+     * 
+     * @return string RPSL object name.
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * Set the name of the object type.
+     * 
+     * @param string $name The name of the primary key.
+     * @return self
+     * @throws LogicException Value is empty
+     */
+    protected function setType( $name )
+    {
+        if ( NULL === $this->type ) {
+            $this->type = $name;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Create an attribute and add it to the attribute list. If a public 
+     * method of a matching name exists, it is registered as callback.
+     * 
+     * @param string $name Name of the attribute.
+     * @param boolean $required If the attribute is mandatory.
+     * @param boolean $multiple If the attribute allows multiple values.
+     * @return AttributeInterface
+     */
+    protected function create( $name, $required, $multiple )
+    {
+        $attr = new Attribute( $name, $required, $multiple );
+
+        $this->attributes[ $attr->getName() ] = $attr;
+
+        $method = $this->name2method( $name );
+        // we must only test public methods
+        if ( method_exists( get_class( $this ), $method ) ) {
+            $attr->apply( [ $this, $method ] );
+        }
+
+        return $attr;
+    }
+
+    /**
+     * Convert an attribute name into a callable method.
+     * 
+     * @param string $name 
+     * @return string
+     */
+    private function name2method( $name )
+    {
+        return preg_replace_callback( '/-([a-z])/', function ( $matches ) {
+            return strtoupper( $matches[1] );
+        }, $name );
+    }
+
+// --- DATA ACCESS ----------------
 
     /**
      * Get the value of the attribute defined as primary key.
@@ -55,7 +138,7 @@ abstract class Object implements ObjectInterface, \ArrayAccess, \IteratorAggrega
      */
     public function getPrimaryKey()
     {
-        return $this->getAttribute($this->primaryKey)->getValue();
+        return $this->getAttribute( $this->primaryKey )->getValue();
     }
 
     /**
@@ -71,136 +154,13 @@ abstract class Object implements ObjectInterface, \ArrayAccess, \IteratorAggrega
     }
 
     /**
-     * Set the name of the primary key.
+     * Get the keys for the attributes (no matter whether they’re defined or not).
      * 
-     * @param string $value The name of the primary key.
-     * @return self
-     * @throws LogicException Value is empty
-     */
-    protected function setKey($name, $value)
-    {
-        if (NULL === $this->primaryKey) {
-            $this->primaryKey = (string) $name;
-            if (strlen($this->primaryKey) === 0) {
-                throw new \LogicException('The Primary Key must not be empty.');
-            }
-            $this->getAttribute($name)->setValue($value)->lock();
-        }
-
-        return $this;
-    }
-
-    /**
-     * Get the name of the current RIPE object.
-     * 
-     * @return string RIPE object name.
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
-
-    /**
-     * Set the name of the object type.
-     * 
-     * @param string $value The name of the primary key.
-     * @return self
-     * @throws LogicException Value is empty
-     */
-    protected function setType($value)
-    {
-        if (NULL === $this->type) {
-            $this->type = (string) $value;
-            if (strlen($this->type) === 0) {
-                throw new \LogicException('The object type must not be empty.');
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * Shortcut for creating an attribute definition.
-     * 
-     * @param string $name Name of the attribute.
-     * @param boolean $required If the attribute is mandatory.
-     * @param boolean $multiple If the attribute allows multiple values.
-     * @return self
-     */
-    protected function create($name, $required, $multiple)
-    {
-        $this->attributes[$name] = new Attribute($name, $required, $multiple);
-
-        return $this;
-    }
-
-    /**
-     * Shortcut for creating a generated attribute definition. Generated 
-     * attributes are set to be optional.
-     * 
-     * @param string $name Name of the attribute.
-     * @param boolean $multiple [false] If the attribute allows multiple values.
-     * @return self
-     */
-    protected function generated($name, $multiple = Attr::SINGLE)
-    {
-        $attr = new Attribute($name, Attr::OPTIONAL, $multiple);
-        $attr->lock();
-
-        $this->attributes[$name] = $attr;
-
-        return $this;
-    }
-
-    /**
-     * Shortcut for creating an attribute with fixed values. Fixed attributes 
-     * are usually single value attributes.
-     * 
-     * @param string $name Name of the attribute.
-     * @param boolean $required If the attribute is mandatory.
-     * @param array $constraint A string list of the allowed values.
-     * @return self
-     */
-    protected function fixed($name, $required, array $constraint)
-    {
-        $this->attributes[$name] = new FixedAttribute($name, $required, $constraint);
-
-        return $this;
-    }
-
-    /**
-     * Shortcut for creating an attribute with values matching a given regular 
-     * expression. Fixed attributes are usually single value attributes.
-     * 
-     * @param string $name Name of the attribute.
-     * @param boolean $required If the attribute is mandatory.
-     * @param string $constraint A RegExp the values have to fulfill.
-     * @return self
-     * @throws InvalidAttributeException RegExp is invalid.
-     */
-    protected function matched($name, $required, $constraint)
-    {
-        $this->attributes[$name] = new MatchedAttribute($name, $required, $constraint);
-
-        return $this;
-    }
-
-    /**
-     * Get the keys for the attributes (no matter whether they’re defined or not), 
-     * optionally adding the names of the generated attributes.
-     * 
-     * @param bool $includeGenerated 
      * @return array
      */
-    public function getAttributeNames($includeGenerated = false)
+    public function getAttributeNames()
     {
-        $names = array_keys($this->attributes);
-
-        if ($includeGenerated) {
-            $names = array_merge($names, array_keys($this->generated));
-        }
-
-        return $names;
+        return array_keys( $this->attributes );
     }
 
     /**
@@ -210,12 +170,15 @@ abstract class Object implements ObjectInterface, \ArrayAccess, \IteratorAggrega
      * @return Attribute Attribute object.
      * @throws InvalidAttributeException Invalid argument name.
      */
-    public function getAttribute($name)
+    public function getAttribute( $name )
     {
-        if (isset($this->attributes[$name])) {
-            return $this->attributes[$name];
+        if ( isset( $this->attributes[ $name ] ) ) {
+            return $this->attributes[ $name ];
         }
-        throw new InvalidAttributeException('Attribute "' . $name . '" is not defined for the ' . strtoupper($this->type) . ' object.');
+
+        $msg = sprintf( 'Attribute "%s" is not defined for the %s object.', 
+            $name, strtoupper( $this->type ) );
+        throw new InvalidAttributeException( $msg );
     }
 
     /**
@@ -225,9 +188,9 @@ abstract class Object implements ObjectInterface, \ArrayAccess, \IteratorAggrega
      * @param mixed $value Attibute value(s).
      * @return self
      */
-    public function setAttribute($name, $value)
+    public function setAttribute( $name, $value )
     {
-        $this->getAttribute($name)->setValue($value);
+        $this->getAttribute( $name )->setValue( $value );
 
         return $this;
     }
@@ -239,9 +202,9 @@ abstract class Object implements ObjectInterface, \ArrayAccess, \IteratorAggrega
      * @param mixed $value Attibute value(s).
      * @return self
      */
-    public function addAttribute($name, $value)
+    public function addAttribute( $name, $value )
     {
-        $this->getAttribute($name)->addValue($value);
+        $this->getAttribute( $name )->addValue( $value );
 
         return $this;
     }
@@ -253,17 +216,17 @@ abstract class Object implements ObjectInterface, \ArrayAccess, \IteratorAggrega
      */
     public function __toString()
     {
-        $output = '';
-        $max = max(array_map('strlen', array_keys($this->attributes)));
-        // using $this because of the applied filter and flattener
-        foreach ($this as $name => $attr)  {
-            $output .= $name . ':   ';
-            $output .= str_pad('', $max - strlen($name), ' ', \STR_PAD_LEFT);
-            $output .= $value . \PHP_EOL;
-        }
+        $max = max( array_map( 'strlen', $this->getAttributeNames() ) );
 
-        return $output;
+        return array_reduce( $this->toArray(), function ( $output, array $item ) use ( $max ) {
+            $output .= $item[ 'name' ] . ':   ';
+            $output .= str_pad( '', $max - strlen( $item[ 'name' ] ), ' ' );
+            $output .= $item[ 'value' ] . \PHP_EOL;
+            return $output;
+        }, '' );
     }
+
+// --- INTERFACES -----------------
 
     /**
      * Checks if an Attribute exists, but not if it is populated.
@@ -271,9 +234,9 @@ abstract class Object implements ObjectInterface, \ArrayAccess, \IteratorAggrega
      * @param mixed $offset The array key.
      * @return boolean
      */
-    public function offsetExists($offset)
+    public function offsetExists( $offset )
     {
-        return isset($this->attributes[$offset]); 
+        return isset( $this->attributes[ $offset ] ); 
     }
 
     /**
@@ -283,9 +246,9 @@ abstract class Object implements ObjectInterface, \ArrayAccess, \IteratorAggrega
      * @return string|array Attribute value.
      * @throws OutOfBoundsException Attribute does not exist.
      */
-    public function offsetGet($offset)
+    public function offsetGet( $offset )
     {
-        return $this->getAttribute($offset)->getValue();
+        return $this->getAttribute( $offset )->getValue();
     }
 
     /**
@@ -297,9 +260,9 @@ abstract class Object implements ObjectInterface, \ArrayAccess, \IteratorAggrega
      * @return void
      * @throws OutOfBoundsException Attribute does not exist.
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet( $offset, $value )
     {
-        $this->setAttribute($offset, $value);
+        $this->setAttribute( $offset, $value );
     }
 
     /**
@@ -308,22 +271,23 @@ abstract class Object implements ObjectInterface, \ArrayAccess, \IteratorAggrega
      * @param string $offset Attribute name.
      * @return void
      */
-    public function offsetUnset($offset)
+    public function offsetUnset( $offset )
     {
-        if (isset($this->attributes[$offset])) {
-            $this->setAttribute($offset, NULL);
+        if (isset($this->attributes[ $offset ])) {
+            $this->setAttribute( $offset, NULL );
         }
     }
 
     /**
-     * Create an Iterator for use in foreach. Only the populated Attributes are passed.
-     * This creates a clone of the Attributes array and hence does not modify the original set.
+     * Create an Iterator for use in foreach. Only the populated Attributes are 
+     * passed. This creates a clone of the Attributes array and hence does not 
+     * modify the original set.
      * 
-     * @return Iterator Read-only access to all defined attributes (including generated attributes)
+     * @return Iterator Read-only access to all defined attributes
      */
     public function getIterator()
     {
-        return new ObjectIterator($this->getDefinedAttributes());
+        return new ObjectIterator( $this );
     }
 
     /**
@@ -333,8 +297,22 @@ abstract class Object implements ObjectInterface, \ArrayAccess, \IteratorAggrega
      */
     public function count()
     {
-        return count($this->getDefinedAttributes());
+        return count( $this->getDefinedAttributes() );
     }
+
+    /**
+     * Convert the list of attributes into a name+value array.
+     * 
+     * @return array
+     */
+    public function toArray()
+    {
+        return array_reduce( $this->getDefinedAttributes(), function ( array $list, AttributeInterface $attr ) {
+            return array_merge( $list, $attr->toArray() );
+        }, [] );
+    }
+
+// --- VALIDATION HELPERS ---------
 
     /**
      * Filter all attributes that are defined.
@@ -343,7 +321,7 @@ abstract class Object implements ObjectInterface, \ArrayAccess, \IteratorAggrega
      */
     protected function getDefinedAttributes()
     {
-        return array_filter($this->attributes, function ($attr) {
+        return array_filter( $this->attributes, function ( AttributeInterface $attr ) {
             return $attr->isDefined();
         });
     }
@@ -355,11 +333,107 @@ abstract class Object implements ObjectInterface, \ArrayAccess, \IteratorAggrega
      */
     public function isValid()
     {
-        return array_reduce($this->attributes, function ($carry, $attr) {
-            if ($attr->isRequired() and !$attr->isDefined()) {
-                return false;
-            }
-            return $carry;
+        return array_reduce( $this->attributes, function ( $bool, AttributeInterface $attr ) {
+            return $bool and ( !$attr->isRequired() or $attr->isDefined() );
         }, true);
+    }
+
+    /**
+     * Validation function for email addresses.
+     * 
+     * @param string $email 
+     * @return string
+     * @throws InvalidValueException
+     */
+    protected function validateEmail( $email )
+    {
+        if ( filter_var( $email, \FILTER_VALIDATE_EMAIL ) ) {
+            return $email;
+        }
+
+        throw new InvalidValueException( 'Invalid email address' );
+    }
+
+    /**
+     * Validation function for phone & fax numbers.
+     * 
+     * @param string $phone 
+     * @return string
+     * @throws InvalidValueException
+     */
+    protected function validatePhone( $phone )
+    {
+        if ( preg_match( '~^\+[1-9]\d* [1-9]\d*( \d+)*( ext\. \d+)?$~', $phone ) ) {
+            return $phone;
+        }
+
+        throw new InvalidValueException( 'Invalid phone/fax number' );
+    }
+
+// --- COMMON VALIDATORS ----------
+
+    /**
+     * Helper callback for the 'country' attribute. The input is valid for a 
+     * 2-letter coutry code, although only the string length is checked.
+     * 
+     * @param string $input 
+     * @return string
+     * @throws InvalidValueException
+     */
+    public function country( $input )
+    {
+        if ( strlen( $input ) === 2) {
+            return strtoupper( $input );
+        }
+
+        throw new InvalidValueException( 'Invalid country code' );
+    }
+
+    /**
+     * Helper callback for the 'notify' attribute. The input is valid for a 
+     * syntactically correct email address.
+     * 
+     * @param string $input 
+     * @return string
+     * @throws InvalidValueException
+     */
+    public function notify( $input )
+    {
+        return $this->validateEmail( $input );
+    }
+
+    /**
+     * Helper callback for the 'changed' attribute. If a valid email is given, 
+     * append the current date. If the input somewhat matches the required 
+     * format, pass it on.
+     * 
+     * @param string $input 
+     * @return string
+     * @throws InvalidValueException
+     */
+    public function changed( $input )
+    {
+        $input = trim( $input );
+
+        if ( filter_var( $input, \FILTER_VALIDATE_EMAIL ) ) {
+            return $input . ' ' . date('Ymd');
+        }
+
+        if ( preg_match( '~^\S+@\S+ (19|20)?\d\d[01]\d[0-3]\d$~', $input ) ) {
+            return $input;
+        }
+
+        throw new InvalidValueException( 'Invalid email or date format' );
+    }
+
+    /**
+     * Helper callback for the 'source' attribute. Converts the input to upper-case.
+     * 
+     * @param string $input 
+     * @return string
+     */
+    public function source( $input )
+    {
+        return strtoupper( $input );
     }
 }
