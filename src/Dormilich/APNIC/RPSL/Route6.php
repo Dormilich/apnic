@@ -20,7 +20,7 @@ class Route6 extends Object
     {
         $this->init();
         $this->setType('route6');
-        $this->setKey('route6', $value);
+        $this->parseKey($value);
     }
 
     /**
@@ -50,6 +50,16 @@ class Route6 extends Object
         $this->create('source',       Attr::REQUIRED, Attr::SINGLE)->apply('strtoupper');
     }
 
+    private function parseKey( $value )
+    {
+        if ( preg_match( '/AS\d+/', $value, $match ) === 1 ) {
+            $this->setAttribute( 'origin', $match[ 0 ] );
+            $value = str_replace( $match[ 0 ], '', $value );
+        }
+
+        $this->setKey( 'route6', trim( $value ) );
+    }
+
     public function route6( $input )
     {
         if ( strpos( $input, '/' ) ) {
@@ -57,7 +67,7 @@ class Route6 extends Object
 
             $ip = filter_var( $ip, \FILTER_VALIDATE_IP, \FILTER_FLAG_IPV6 );
             $length = filter_var( $length, \FILTER_VALIDATE_INT, 
-                [ 'options' => [ 'min_range' => 0, 'max_range' => 32 ] ] );
+                [ 'options' => [ 'min_range' => 0, 'max_range' => 128 ] ] );
 
             if ( $ip and is_int( $length ) ) {
                 return $input;
