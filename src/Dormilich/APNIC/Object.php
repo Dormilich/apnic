@@ -216,13 +216,10 @@ abstract class Object implements ObjectInterface, ArrayInterface, \ArrayAccess, 
      */
     public function __toString()
     {
-        $max = max( array_map( 'strlen', $this->getAttributeNames() ) );
+        $max = 3 + max( array_map( 'strlen', $this->getAttributeNames() ) );
 
         return array_reduce( $this->toArray(), function ( $output, array $item ) use ( $max ) {
-            $output .= $item[ 'name' ] . ':   ';
-            $output .= str_pad( '', $max - strlen( $item[ 'name' ] ), ' ' );
-            $output .= $item[ 'value' ] . \PHP_EOL;
-            return $output;
+            return $output . sprintf( "%-{$max}s %s\n", $item[ 'name' ] . ':', $item[ 'value' ] );
         }, '' );
     }
 
