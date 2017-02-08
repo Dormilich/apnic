@@ -410,6 +410,13 @@ class RpslTest extends TestCase
         $this->assertSame('AS135', $obj['origin']);
     }
 
+    public function testRouteWithCompositeKey()
+    {
+        $obj = new RPSL\Route('192.168.1.0/24AS135');
+        $this->assertSame('192.168.1.0/24', $obj['route']);
+        $this->assertSame('AS135', $obj['origin']);
+    }
+
     /**
      * @expectedException \Dormilich\APNIC\Exceptions\InvalidValueException
      * @expectedExceptionMessage Invalid IPv4 route
@@ -417,6 +424,15 @@ class RpslTest extends TestCase
     public function testRouteWithInvalidAddressFails()
     {
         new RPSL\Route('2001:0DB8::/32');
+    }
+
+    /**
+     * @expectedException \Dormilich\APNIC\Exceptions\InvalidValueException
+     * @expectedExceptionMessage Invalid IPv4 route
+     */
+    public function testRouteWithInvalidIPv4CidrFails()
+    {
+        new RPSL\Route('192.168.1.0/44'); // prefix length too large
     }
 
     /**
@@ -431,7 +447,7 @@ class RpslTest extends TestCase
 
     public function testRoute6()
     {
-        $obj = new RPSL\Route6('2001:0DB8::/32');
+        $obj = new RPSL\Route6('2001:0DB8::/64');
         $names = [
             'route6', 'descr', 'country', 'origin', 'holes', 
             'member-of', 'inject', 'aggr-mtd', 'aggr-bndry', 
@@ -441,6 +457,13 @@ class RpslTest extends TestCase
         $this->assertEquals($names, $obj->getAttributeNames());
 
         $obj['origin'] = 'AS135';
+        $this->assertSame('AS135', $obj['origin']);
+    }
+
+    public function testRoute6WithCompositeKey()
+    {
+        $obj = new RPSL\Route6('2001:0DB8::/48AS135');
+        $this->assertSame('2001:0DB8::/48', $obj['route6']);
         $this->assertSame('AS135', $obj['origin']);
     }
 
