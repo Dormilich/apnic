@@ -12,7 +12,7 @@
 >
    <testsuites>
       <testsuite name="APNIC RPSL Test Suite">
-         <directory suffix="Test.php" phpVersion="5.4.0">./tests</directory>
+         <directory suffix="Test.php" phpVersion="5.6.0" phpVersionOperator=">=">./tests</directory>
       </testsuite>
    </testsuites>
 
