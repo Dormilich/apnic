@@ -165,15 +165,16 @@ class Attribute implements AttributeInterface, ArrayInterface, \Countable, \Json
         if ( NULL === $value ) {
             return $this;
         }
-
+        // split block text regardless of attribute type 
+        // otherwise the created RPSL block text is likely to be invalid
+        if ( is_string( $value ) and strpos( $value, "\n" ) !== false ) {
+            $value = explode( "\n", $value );
+        }
         // wrapping the supposedly-single value in an array makes sure that 
         // only a single iteration is done, even if an iterable is passed
-        if ( !$this->multiple ) {
+        if ( ! $this->multiple ) {
             $this->value = [];
             $value = [ $value ];
-        }
-        elseif ( is_string( $value ) and strpos( $value, "\n" ) !== false ) {
-            $value = explode( "\n", $value );
         }
 
         foreach ( $this->loop( $value ) as $v ) {

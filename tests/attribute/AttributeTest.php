@@ -3,6 +3,7 @@
 use Dormilich\APNIC\Attribute;
 use Dormilich\APNIC\AttributeInterface as Attr;
 use PHPUnit\Framework\TestCase;
+use Test\BaseObject;
 
 class AttributeTest extends TestCase
 {
@@ -142,6 +143,15 @@ class AttributeTest extends TestCase
 
     // input types
 
+    public function testAttributeAllowsRpslObject()
+    {
+        $attr = new Attribute('foo', Attr::REQUIRED, Attr::SINGLE);
+        $obj = new BaseObject('phpunit');
+
+        $attr->setValue($obj);
+        $this->assertSame('phpunit', $attr->getValue());
+    }
+
     /**
      * @expectedException \Dormilich\APNIC\Exceptions\InvalidDataTypeException
      * @expectedExceptionMessageRegExp # \[foo\] #
@@ -203,6 +213,43 @@ class AttributeTest extends TestCase
 
         $attr->setValue(['fizz' => 'buzz']);
         $this->assertSame(['buzz'], $attr->getValue());
+    }
+
+    public function testMultipleAttributeSplitsMultilineText()
+    {
+        $attr = new Attribute('foo', Attr::REQUIRED, Attr::MULTIPLE);
+
+        $value = <<<TXT
+Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor
+incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute
+iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+
+Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt
+mollit anim id est laborum.
+TXT;
+        $attr->setValue($value);
+        $this->assertCount(7, $attr);
+    }
+
+    /**
+     * @expectedException \Dormilich\APNIC\Exceptions\InvalidDataTypeException
+     * @expectedExceptionMessage The [foo] attribute does not allow the array data type.
+     */
+    public function testsingleAttributeDoesNotAllowMultilineText()
+    {
+        $attr = new Attribute('foo', Attr::REQUIRED, Attr::SINGLE);
+
+        $value = <<<TXT
+Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor
+incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute
+iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+
+Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt
+mollit anim id est laborum.
+TXT;
+        $attr->setValue($value);
     }
 
     // input validation
