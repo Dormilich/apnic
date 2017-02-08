@@ -102,7 +102,7 @@ class Attribute implements AttributeInterface, ArrayInterface, \Countable, \Json
      */
     public function apply( callable $callback )
     {
-        if ( !is_callable( $this->callback ) ) {
+        if ( ! is_callable( $this->callback ) ) {
             $this->callback = $callback;
         }
 
@@ -275,7 +275,7 @@ class Attribute implements AttributeInterface, ArrayInterface, \Countable, \Json
     public function toArray()
     {
         $data = array_filter( $this->value, 'strlen' );
-        $data = array_map(function ( $value ) {
+        $data = array_map( function ( $value ) {
             return [
                 'name'  => $this->name,
                 'value' => $value,

@@ -17,7 +17,7 @@ class ObjectIterator extends \ArrayIterator
      * @param ArrayInterface $object.
      * @return self
      */
-    public function __construct(ArrayInterface $object)
+    public function __construct( ArrayInterface $object )
     {
         parent::__construct($object->toArray());
     }
@@ -27,7 +27,7 @@ class ObjectIterator extends \ArrayIterator
      */
     public function current()
     {
-        return parent::current()['value'];
+        return parent::current()[ 'value' ];
     }
 
     /**
@@ -35,6 +35,6 @@ class ObjectIterator extends \ArrayIterator
      */
     public function key()
     {
-        return parent::current()['name'];
+        return parent::current()[ 'name' ];
     }
 }

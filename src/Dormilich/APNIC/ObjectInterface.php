@@ -35,7 +35,7 @@ interface ObjectInterface
      * @return AttributeInterface Attribute object.
      * @throws InvalidAttributeException Invalid argument name.
      */
-    public function getAttribute($name);
+    public function getAttribute( $name );
 
     /**
      * Get the keys for the attributes (no matter whether they’re defined or not).

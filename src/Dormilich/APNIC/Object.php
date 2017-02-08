@@ -149,7 +149,7 @@ abstract class Object implements ObjectInterface, ArrayInterface, \ArrayAccess, 
     private function name2method( $name )
     {
         return preg_replace_callback( '/-([a-z])/', function ( $matches ) {
-            return strtoupper( $matches[1] );
+            return strtoupper( $matches[ 1 ] );
         }, $name );
     }
 
@@ -358,7 +358,7 @@ abstract class Object implements ObjectInterface, ArrayInterface, \ArrayAccess, 
     public function isValid()
     {
         return array_reduce( $this->attributes, function ( $bool, AttributeInterface $attr ) {
-            return $bool and ( !$attr->isRequired() or $attr->isDefined() );
+            return $bool and ( ! $attr->isRequired() or $attr->isDefined() );
         }, true);
     }
 
@@ -387,18 +387,76 @@ abstract class Object implements ObjectInterface, ArrayInterface, \ArrayAccess, 
      */
     protected function validatePhone( $phone )
     {
-        if ( preg_match( '~^\+[1-9]\d* [1-9]\d*( \d+)*( ext\. \d+)?$~', $phone ) ) {
+        if ( preg_match( '~^\+[1-9]\d*([ .-]\d+)*( ext\. \d+)?$~', $phone ) ) {
             return $phone;
         }
 
         throw new InvalidValueException( 'Invalid phone/fax number' );
     }
 
+    /**
+     * Validation function for all attributes that require a Mntner object. 
+     * (And there are a lot of them so I consider this justified)
+     * 
+     * @param mixed $input Handle string or object.
+     * @param string $type The validating attribute’s name.
+     * @return string
+     * @throws InvalidValueException
+     */
+    protected function validateMntner( $input, $type )
+    {
+        if ( $input instanceof RPSL\Mntner ) {
+            return $input->getPrimaryKey();
+        }
+
+        return $this->validateReference( $input, $type, [ 'Mntner' ] );
+    }
+
+    /**
+     * Validate object references. Any valid object must be handled before this 
+     * as at this point only valid strings will pass validation.
+     * 
+     * @param string|object $input Handle string or (invalid) object.
+     * @param string $type The attribute requesting validation.
+     * @param array $allowed The allowed object types.
+     * @return string
+     * @throws InvalidValueException
+     */
+    protected function validateReference( $input, $type, array $allowed )
+    {
+        if ( $input instanceof ObjectInterface ) {
+            $msg = sprintf( 'Only %s objects are allowed as %s', implode( '/', $allowed ), $type );
+            throw new InvalidValueException( $msg );
+        }
+
+        if ( is_string( $input ) ) {
+            return $this->validateHandle( strtoupper( $input ) );
+        }
+
+        throw new InvalidValueException( 'Invalid handle for ' . $type );
+    }
+
+    /**
+     * Validation function for RPSL object handles.
+     * 
+     * @param string $handle 
+     * @return string
+     * @throws InvalidValueException
+     */
+    protected function validateHandle( $handle )
+    {
+        if ( ! preg_match( '~[^A-Z0-9-]~', $handle ) ) {
+            return $handle;
+        }
+
+        throw new InvalidValueException( 'Invalid RPSL object handle' );
+    }
+
 // --- COMMON VALIDATORS ----------
 
     /**
      * Helper callback for the 'country' attribute. The input is valid for a 
-     * 2-letter coutry code, although only the string length is checked.
+     * 2-letter coutry code.
      * 
      * @param string $input 
      * @return string
@@ -406,7 +464,7 @@ abstract class Object implements ObjectInterface, ArrayInterface, \ArrayAccess, 
      */
     public function country( $input )
     {
-        if ( strlen( $input ) === 2) {
+        if ( preg_match( '~^[A-Za-z]{2}$~', $input ) ) {
             return strtoupper( $input );
         }
 
@@ -440,7 +498,7 @@ abstract class Object implements ObjectInterface, ArrayInterface, \ArrayAccess, 
         $input = trim( $input );
 
         if ( filter_var( $input, \FILTER_VALIDATE_EMAIL ) ) {
-            return $input . ' ' . date('Ymd');
+            return $input . date( ' Ymd' );
         }
 
         if ( preg_match( '~^\S+@\S+ (19|20)?\d\d[01]\d[0-3]\d$~', $input ) ) {
@@ -449,4 +507,57 @@ abstract class Object implements ObjectInterface, ArrayInterface, \ArrayAccess, 
 
         throw new InvalidValueException( 'Invalid email or date format' );
     }
+
+    /**
+     * Helper callback for the 'admin-c' attribute. The input is valid for a 
+     * Person object or an RPSL object handle.
+     * 
+     * @param string|Person $input 
+     * @return string
+     * @throws InvalidValueException
+     */
+    public function adminC( $input )
+    {
+        if ( $input instanceof RPSL\Person ) {
+            return $input->getPrimaryKey();
+        }
+
+        return $this->validateReference( $input, 'admin-c', [ 'Person' ] );
+    }
+
+    /**
+     * Helper callback for the 'tech-c' attribute. The input is valid for a 
+     * Person or Role object or an RPSL object handle.
+     * 
+     * @param string|Person|Role $input 
+     * @return string
+     * @throws InvalidValueException
+     */
+    public function techC( $input )
+    {
+        if ( $input instanceof RPSL\Person ) {
+            return $input->getPrimaryKey();
+        }
+        if ( $input instanceof RPSL\Role ) {
+            return $input->getPrimaryKey();
+        }
+
+        return $this->validateReference( $input, 'tech-c', [ 'Person', 'Role' ] );
+    }
+
+    /**
+     * Helper callback for the 'mnt-by' attribute. The input is valid for a 
+     * Mntner object or an RPSL object handle.
+     * 
+     * @param string|Mntner $input 
+     * @return string
+     * @throws InvalidValueException
+     */
+    public function mntBy( $input )
+    {
+        return $this->validateMntner( $input, 'mnt-by' );
+    }
+
+    // there are various other mnt-* and *-c attributes, but they or their 
+    // objects are hardly used so it’s not yet worth the effort
 }

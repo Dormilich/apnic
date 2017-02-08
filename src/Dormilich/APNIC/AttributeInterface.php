@@ -55,7 +55,7 @@ interface AttributeInterface
      * @param mixed $value A literal value (string preferred) or an array thereof.
      * @return self
      */
-    public function setValue($value);
+    public function setValue( $value );
 
     /**
      * Add value(s) to the attribute. If the attribute does not allow multiple values
@@ -64,5 +64,5 @@ interface AttributeInterface
      * @param mixed $value A literal value (string preferred) or an array thereof.
      * @return self
      */
-    public function addValue($value);
+    public function addValue( $value );
 }

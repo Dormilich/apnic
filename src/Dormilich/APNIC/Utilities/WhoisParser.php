@@ -27,7 +27,7 @@ class WhoisParser
      * 
      * @param string $text Text block.
      * @param ObjectInterface $object A default object to fill with data.
-     * @return ObjectInterface RPSL object.
+     * @return ObjectInterface|NULL RPSL object or null if there were no RPSL data.
      * @throws InvalidAttributeException RPSL block does not match the feed object.
      * @throws RuntimeException Error line found.
      * @throws UnexpectedValueException Could not create object for this RPSL block.
@@ -41,15 +41,15 @@ class WhoisParser
             if ( $this->isComment( $line ) ) { 
                 continue;
             }
-            // this skips anything (e.g. empty lines) that is not an attribute definition
+            // this skips anything that is not an attribute definition
             // or a comment-only attribute (cf. "auth: # Filtered")
-            if ( preg_match( '~^\s*([\w-]+)\s*:\s*([^#\s].*)~', $line, $match ) !== 1 ) {
+            // `inet6num` & `route6` are the only attributes containing a number
+            if ( preg_match( '~^\s*([a-z6-]+)\s*:\s*([^#\s].*)~', $line, $match ) !== 1 ) {
                 continue;
             }
             // need the reassignment, otherwise the switch from NULL to Object fails
             $object = $this->addAttribute( $object, $match[ 1 ], $match[ 2 ] );
-            // skip parsing after the `source` property, 
-            // which is usually the last in an RPSL block
+
             if ( $match[ 1 ] === 'source' ) {
                 break;
             }
@@ -150,7 +150,7 @@ class WhoisParser
     private function type2class( $type )
     {
         $name = preg_replace_callback( '/-?\b([a-z])/', function ( $matches ) {
-            return strtoupper( $matches[1] );
+            return strtoupper( $matches[ 1 ] );
         }, $type );
 
         $class = 'Dormilich\\APNIC\\RPSL\\' . $name;
