@@ -34,10 +34,6 @@ class KeyCert extends Object
     protected function init()
     {
         $this->create('key-cert', Attr::REQUIRED, Attr::SINGLE);
-        $this->create('method',   Attr::OPTIONAL, Attr::SINGLE)->lock();
-        // should be locked, but that would make data seeding unnecessarily complex
-        $this->create('owner',    Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('fingerpr', Attr::OPTIONAL, Attr::SINGLE)->lock();
         $this->create('certif',   Attr::REQUIRED, Attr::MULTIPLE);
         $this->create('remarks',  Attr::OPTIONAL, Attr::MULTIPLE);
         $this->create('notify',   Attr::OPTIONAL, Attr::MULTIPLE);
@@ -46,6 +42,10 @@ class KeyCert extends Object
         $this->create('mnt-by',   Attr::REQUIRED, Attr::MULTIPLE);
         $this->create('changed',  Attr::REQUIRED, Attr::MULTIPLE);
         $this->create('source',   Attr::REQUIRED, Attr::SINGLE)->apply('strtoupper');
+
+        $this->setGeneratedAttribute('method',   Attr::SINGLE);
+        $this->setGeneratedAttribute('owner',    Attr::MULTIPLE);
+        $this->setGeneratedAttribute('fingerpr', Attr::SINGLE);
     }
 
     public function keyCert( $input )

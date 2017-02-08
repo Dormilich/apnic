@@ -40,6 +40,12 @@ abstract class Object implements ObjectInterface, ArrayInterface, \ArrayAccess, 
      */
     private $attributes = [];
 
+    /**
+     * Name-indexed array of auto-generated attributes, which should not be set by the user.
+     * @var array 
+     */
+    private $generated  = [];
+
 // --- OBJECT SETUP ---------------
 
     /**
@@ -60,7 +66,7 @@ abstract class Object implements ObjectInterface, ArrayInterface, \ArrayAccess, 
     {
         if ( NULL === $this->primaryKey ) {
             $this->primaryKey = $name;
-            $this->getAttribute( $name )->setValue( $value )->lock();
+            $this->getAttribute( $name )->setValue( $value );
         }
 
         return $this;
@@ -117,6 +123,24 @@ abstract class Object implements ObjectInterface, ArrayInterface, \ArrayAccess, 
     }
 
     /**
+     * Set a generated attribute. These attributes are not serialised. Its values 
+     * are only accessible from the object itself. Generated attributes are always 
+     * optional.
+     * 
+     * @param string $name Name of the attribute.
+     * @param boolean $multiple If the attribute allows multiple values.
+     * @return AttributeInterface
+     */
+    protected function setGeneratedAttribute( $name, $multiple )
+    {
+        $attr = new Attribute( $name, AttributeInterface::OPTIONAL, $multiple );
+
+        $this->generated[ $attr->getName() ] = $attr;
+
+        return $attr;
+    }
+
+    /**
      * Convert an attribute name into a callable method.
      * 
      * @param string $name 
@@ -160,7 +184,7 @@ abstract class Object implements ObjectInterface, ArrayInterface, \ArrayAccess, 
      */
     public function getAttributeNames()
     {
-        return array_keys( $this->attributes );
+        return array_keys( $this->attributes + $this->generated );
     }
 
     /**
@@ -174,6 +198,9 @@ abstract class Object implements ObjectInterface, ArrayInterface, \ArrayAccess, 
     {
         if ( isset( $this->attributes[ $name ] ) ) {
             return $this->attributes[ $name ];
+        }
+        if ( isset( $this->generated[ $name ] ) ) {
+            return $this->generated[ $name ];
         }
 
         $msg = sprintf( 'Attribute "%s" is not defined for the %s object.', 

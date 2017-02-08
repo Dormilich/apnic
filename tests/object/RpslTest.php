@@ -262,13 +262,10 @@ class RpslTest extends TestCase
     {
         $obj = new RPSL\KeyCert('PGPKEY-83F2A90E');
         $names = [
-            'key-cert', 'method', 'owner', 'fingerpr', 'certif', 'remarks', 
-            'notify', 'admin-c', 'tech-c', 'mnt-by', 'changed', 'source', 
+            'key-cert', 'certif', 'remarks', 'notify', 'admin-c', 'tech-c', 
+            'mnt-by', 'changed', 'source', 'method', 'owner', 'fingerpr', 
         ];
         $this->assertEquals($names, $obj->getAttributeNames());
-        $this->assertTrue($obj->getAttribute('method')->isLocked());
-        $this->assertTrue($obj->getAttribute('fingerpr')->isLocked());
-        // 'owner' is not locked due to data seeding issues
     }
 
     /**
