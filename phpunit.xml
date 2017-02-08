@@ -11,8 +11,14 @@
    syntaxCheck="false"
 >
    <testsuites>
-      <testsuite name="APNIC RPSL Test Suite">
-         <directory suffix="Test.php" phpVersion="5.6.0" phpVersionOperator=">=">./tests</directory>
+      <testsuite name="attribute">
+         <directory suffix="Test.php" phpVersion="5.6.0">./tests/attribute</directory>
+      </testsuite>
+      <testsuite name="object">
+         <directory suffix="Test.php" phpVersion="5.6.0">./tests/object</directory>
+      </testsuite>
+      <testsuite name="helper">
+         <directory suffix="Test.php" phpVersion="5.6.0">./tests/helper</directory>
       </testsuite>
    </testsuites>
 

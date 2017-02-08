@@ -1,0 +1,35 @@
+% [whois.apnic.net]
+% Whois data copyright terms    http://www.apnic.net/db/dbcopyright.html
+
+% Information related to 'MAINT-EXAMPLE-HK'
+
+mntner:         MAINT-EXAMPLE-HK
+descr:          Example, Ltd. (HK)
+country:        HK
+admin-c:        XL1-AP
+upd-to:         abuse@example.com
+auth:           # Filtered
+mnt-by:         MAINT-EXAMPLE-HK
+referral-by:    APNIC-HM
+changed:        hm-changed@apnic.net 19700101
+source:         APNIC
+
+role:           Example, Ltd. administrator
+address:        Any Street 1
+address:        Hong Kong District 2
+address:        Hong Kong
+country:        HK
+phone:          +852-1234-7531902
+fax-no:         +852-1234-8642091
+e-mail:         abuse@example.com
+admin-c:        XL1-AP
+tech-c:         XL1-AP
+nic-hdl:        XL1-AP
+mnt-by:         MAINT-EXAMPLE-HK
+changed:        hm-changed@apnic.net 19700101
+source:         APNIC
+
+% This query was served by the APNIC Whois Service version 1.69.1-APNICv1r0 (UNDEFINED)
+
+
+fgets: Connection reset by peer
