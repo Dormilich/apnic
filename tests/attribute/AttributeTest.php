@@ -240,34 +240,6 @@ class AttributeTest extends TestCase
         $this->assertSame('XY', $attr->getValue());
     }
 
-    // value locking
-
-    public function testAttributeCanBeLocked()
-    {
-        $attr = new Attribute('test', Attr::REQUIRED, Attr::SINGLE);
-        $this->assertFalse($attr->isLocked());
-        $attr->lock();
-        $this->assertTrue($attr->isLocked());
-
-        $attr->setValue('foo');
-        $this->assertSame('foo', $attr->getValue());
-
-        $attr->setValue('bar');
-        $this->assertSame('foo', $attr->getValue());
-    }
-
-    public function testMultipleAttributeCanBeLocked()
-    {
-        $attr = new Attribute('test', Attr::REQUIRED, Attr::MULTIPLE);
-        $attr->lock();
-
-        $attr->setValue(['foo', 'bar']);
-        $this->assertSame(['foo', 'bar'], $attr->getValue());
-
-        $attr->addValue('quux');
-        $this->assertSame(['foo', 'bar'], $attr->getValue());
-    }
-
     // interface implementation
 
     public function testSingleAttributeValueCount()

@@ -28,11 +28,6 @@ class Attribute implements AttributeInterface, ArrayInterface, \Countable, \Json
     protected $multiple;
 
     /**
-     * @var boolean 
-     */
-    protected $locked = false;
-
-    /**
      * @var callable 
      */
     protected $callback;
@@ -97,28 +92,6 @@ class Attribute implements AttributeInterface, ArrayInterface, \Countable, \Json
     }
 
     /**
-     * Whether the attribute allows editing the attribute value, once it’s set.
-     * 
-     * @return boolean
-     */
-    public function isLocked()
-    {
-        return $this->locked;
-    }
-
-    /**
-     * Disallow editing the attribute’s value.
-     * 
-     * @return self
-     */
-    public function lock()
-    {
-        $this->locked = true;
-
-        return $this;
-    }
-
-    /**
      * Set the transformer/validator callback that the input value is applied to. 
      * Validating callbacks should throw an exception if the input is invalid. 
      * The callback must return the value if it is valid.
@@ -167,10 +140,8 @@ class Attribute implements AttributeInterface, ArrayInterface, \Countable, \Json
      */
     public function setValue( $value )
     {
-        if ( !$this->locked or count( $this->value ) === 0 ) {
-            $this->value = [];
-            $this->addValue( $value );
-        }
+        $this->value = [];
+        $this->addValue( $value );
 
         return $this;
     }
@@ -195,15 +166,14 @@ class Attribute implements AttributeInterface, ArrayInterface, \Countable, \Json
             return $this;
         }
 
-        if ( $this->locked and count( $this->value ) > 0 ) {
-            return $this;
-        }
-
         // wrapping the supposedly-single value in an array makes sure that 
         // only a single iteration is done, even if an iterable is passed
         if ( !$this->multiple ) {
             $this->value = [];
             $value = [ $value ];
+        }
+        elseif ( is_string( $value ) and strpos( $value, "\n" ) !== false ) {
+            $value = explode( "\n", $value );
         }
 
         foreach ( $this->loop( $value ) as $v ) {
@@ -241,7 +211,7 @@ class Attribute implements AttributeInterface, ArrayInterface, \Countable, \Json
         $value = $this->run( $value );
         $value = $this->stringify( $value );
 
-        return $value;
+        return rtrim( $value );
     }
 
     /**
@@ -274,7 +244,10 @@ class Attribute implements AttributeInterface, ArrayInterface, \Countable, \Json
         if ( false === $value ) {
             return 'false';
         }
-        if ( is_scalar( $value ) or (is_object( $value ) and method_exists( $value, '__toString' ) ) ) {
+        if ( $value instanceof ObjectInterface ) {
+            return $value->getPrimaryKey();
+        }
+        if ( is_scalar( $value ) or ( is_object( $value ) and method_exists( $value, '__toString' ) ) ) {
             return (string) $value;
         }
 

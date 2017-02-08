@@ -86,15 +86,6 @@ class ObjectTest extends TestCase
         $this->assertEquals('y', $obj->getAttribute('name')->getValue());
     }
 
-    public function testPrimaryKeyIsLocked()
-    {
-        $obj = new Object('foo');
-        $this->assertSame('foo',  $obj->getPrimaryKey());
-
-        $obj->setAttribute($obj->getPrimaryKeyName(), 'bar');
-        $this->assertSame('foo',  $obj->getPrimaryKey());
-    }
-
     public function testGetAttributeValueDirectly()
     {
         $obj = new Object('foo');

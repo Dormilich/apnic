@@ -35,13 +35,6 @@ interface AttributeInterface
     public function isMultiple();
 
     /**
-     * Whether the attribute allows editing the attribute value, once it’s set.
-     * 
-     * @return boolean
-     */
-    public function isLocked();
-
-    /**
      * Get the name of the attribute.
      * 
      * @return string
