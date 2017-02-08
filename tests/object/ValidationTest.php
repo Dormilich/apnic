@@ -2,8 +2,9 @@
 
 use Test\ValidationObject as Object;
 use Dormilich\APNIC\AttributeInterface as Attr;
+use PHPUnit\Framework\TestCase;
 
-class ValidationTest extends PHPUnit_Framework_TestCase
+class ValidationTest extends TestCase
 {
     public function testChangedValidatorWithEmail()
     {

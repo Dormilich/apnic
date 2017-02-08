@@ -2,8 +2,9 @@
 
 use Dormilich\APNIC\Attribute;
 use Dormilich\APNIC\AttributeInterface as Attr;
+use PHPUnit\Framework\TestCase;
 
-class AttributeTest extends PHPUnit_Framework_TestCase
+class AttributeTest extends TestCase
 {
     // setup - name
 

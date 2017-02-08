@@ -2,8 +2,9 @@
 
 use Dormilich\APNIC\RPSL as RPSL;
 use Dormilich\APNIC\AttributeInterface as Attr;
+use PHPUnit\Framework\TestCase;
 
-class RpslTest extends PHPUnit_Framework_TestCase
+class RpslTest extends TestCase
 {
     public function testAsBlock()
     {
