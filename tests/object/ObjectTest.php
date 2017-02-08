@@ -20,14 +20,22 @@ class ObjectTest extends TestCase
         $obj = new Object('foo');
         $names = $obj->getAttributeNames();
 
-        $this->assertCount(3, $names);
-        $this->assertEquals(['test', 'name', 'comment'], $names);
+        $this->assertCount(4, $names);
+        $this->assertEquals(['test', 'name', 'comment', 'last-modified'], $names);
     }
 
     public function testGetAttributeObject()
     {
         $obj = new Object('foo');
         $attr = $obj->getAttribute('test');
+
+        $this->assertInstanceOf('Dormilich\APNIC\Attribute', $attr);
+    }
+
+    public function testGetGeneratedAttributeObject()
+    {
+        $obj = new Object('foo');
+        $attr = $obj->getAttribute('last-modified');
 
         $this->assertInstanceOf('Dormilich\APNIC\Attribute', $attr);
     }
