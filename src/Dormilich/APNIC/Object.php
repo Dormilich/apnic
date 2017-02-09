@@ -3,6 +3,9 @@
 
 namespace Dormilich\APNIC;
 
+use ArrayAccess;
+use Countable;
+use IteratorAggregate;
 use Dormilich\APNIC\Exceptions\IncompleteRPSLObjectException;
 use Dormilich\APNIC\Exceptions\InvalidAttributeException;
 use Dormilich\APNIC\Exceptions\InvalidDataTypeException;
@@ -13,14 +16,15 @@ use Dormilich\APNIC\Exceptions\InvalidValueException;
  * 
  * A child class must
  *  1) define a primary key and type (which are usually the same)
- *  2) set the class name to thats name using camel case (e.g. domain => Domain, aut-num => AutNum)
+ *  2) set the class name to type’s name using camel case 
+ *      (e.g. domain => Domain, aut-num => AutNum)
  *  3) define the attributes for this RPSL object
  * 
  * A child class should
  *  - set the primary key on instantiation
  *  - set a "VERSION" constant
  */
-abstract class Object implements ObjectInterface, ArrayInterface, \ArrayAccess, \IteratorAggregate, \Countable
+abstract class Object implements ObjectInterface, ArrayInterface, ArrayAccess, IteratorAggregate, Countable
 {
     /**
      * The type of the object.
@@ -297,7 +301,7 @@ abstract class Object implements ObjectInterface, ArrayInterface, \ArrayAccess, 
      */
     public function offsetUnset( $offset )
     {
-        if (isset($this->attributes[ $offset ])) {
+        if ( isset( $this->attributes[ $offset ] ) ) {
             $this->set( $offset, NULL );
         }
     }
