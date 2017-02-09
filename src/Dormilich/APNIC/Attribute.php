@@ -3,9 +3,13 @@
 
 namespace Dormilich\APNIC;
 
+use Countable;
+use Iterator;
+use JsonSerializable;
+use Traversable;
 use Dormilich\APNIC\Exceptions\InvalidDataTypeException;
 
-class Attribute implements AttributeInterface, ArrayInterface, \Countable, \JsonSerializable
+class Attribute implements AttributeInterface, ArrayInterface, Countable, Iterator, JsonSerializable
 {
     /**
      * @var string
@@ -154,6 +158,8 @@ class Attribute implements AttributeInterface, ArrayInterface, \Countable, \Json
      * reset the Attribute while `addValue(NULL)` has no effect. Passing an 
      * array to a single-valued attribute will cause a data type error. 
      * 
+     * If a multiline block of text is passed, treat it as an array of text lines.
+     * 
      * For single-valued attributes `addValue()` and `setValue()` work identically. 
      * 
      * @param mixed $value A string or stringifyable object or an array thereof.
@@ -195,7 +201,7 @@ class Attribute implements AttributeInterface, ArrayInterface, \Countable, \Json
         if ( is_array( $value ) ) {
             return $value;
         }
-        if ( $value instanceof \Traversable ) {
+        if ( $value instanceof Traversable ) {
             return $value;
         }
         return [ $value ];
@@ -257,17 +263,6 @@ class Attribute implements AttributeInterface, ArrayInterface, \Countable, \Json
     }
 
     /**
-     * Number of values assigned.
-     * 
-     * @see http://php.net/Countable
-     * @return integer
-     */
-    public function count()
-    {
-        return count( $this->value );
-    }
-
-    /**
      * Convert the list of values into a name+value array.
      * 
      * @return array
@@ -292,5 +287,61 @@ class Attribute implements AttributeInterface, ArrayInterface, \Countable, \Json
     public function jsonSerialize()
     {
         return $this->toArray();
+    }
+
+    /**
+     * Number of values assigned.
+     * 
+     * @see http://php.net/Countable
+     * @return integer
+     */
+    public function count()
+    {
+        return count( $this->value );
+    }
+
+    /**
+     * @see http://php.net/Iterator
+     * @return void
+     */
+    public function rewind()
+    {
+        reset( $this->value );
+    }
+    
+    /**
+     * @see http://php.net/Iterator
+     * @return string
+     */
+    public function current()
+    {
+        return current( $this->value );
+    }
+    
+    /**
+     * @see http://php.net/Iterator
+     * @return integer
+     */
+    public function key()
+    {
+        return key( $this->value );
+    }
+    
+    /**
+     * @see http://php.net/Iterator
+     * @return void
+     */
+    public function next()
+    {
+        next( $this->value );
+    }
+    
+    /**
+     * @see http://php.net/Iterator
+     * @return boolean
+     */
+    public function valid()
+    {
+        return NULL !== key( $this->value );
     }
 }

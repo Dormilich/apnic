@@ -406,8 +406,12 @@ class RpslTest extends TestCase
         ];
         $this->assertEquals($names, $obj->getAttributeNames());
 
+        $this->assertNull($obj->getPrimaryKey());
+
         $obj['origin'] = 'AS135';
         $this->assertSame('AS135', $obj['origin']);
+
+        $this->assertSame('192.168.1.0/24AS135', $obj->getPrimaryKey());
     }
 
     public function testRouteWithCompositeKey()
@@ -456,8 +460,12 @@ class RpslTest extends TestCase
         ];
         $this->assertEquals($names, $obj->getAttributeNames());
 
+        $this->assertNull($obj->getPrimaryKey());
+
         $obj['origin'] = 'AS135';
         $this->assertSame('AS135', $obj['origin']);
+
+        $this->assertSame('2001:0DB8::/64AS135', $obj->getPrimaryKey());
     }
 
     public function testRoute6WithCompositeKey()
@@ -465,6 +473,14 @@ class RpslTest extends TestCase
         $obj = new RPSL\Route6('2001:0DB8::/48AS135');
         $this->assertSame('2001:0DB8::/48', $obj['route6']);
         $this->assertSame('AS135', $obj['origin']);
+    }
+
+    public function testRoute6WithInet6num()
+    {
+        $net = new RPSL\Inet6num('2001:0DB8::/48');
+        $obj = new RPSL\Route6($net);
+        $this->assertSame('2001:0DB8::/48', $obj['route6']);
+        $this->assertNull($obj->getPrimaryKey());
     }
 
     /**

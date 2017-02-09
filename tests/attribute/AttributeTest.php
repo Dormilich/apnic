@@ -338,4 +338,16 @@ TXT;
         ];
         $this->assertJsonStringEqualsJsonString(json_encode($expected), json_encode($attr));
     }
+
+    public function testSingleAttributeIsIterable()
+    {
+        $attr = new Attribute('test', Attr::REQUIRED, Attr::SINGLE);
+
+        $array0 = iterator_to_array($attr);
+        $this->assertEquals([], $array0);
+
+        $attr->setValue('phpunit');
+        $array1 = iterator_to_array($attr);
+        $this->assertEquals(['phpunit'], $array1);
+    }
 }
