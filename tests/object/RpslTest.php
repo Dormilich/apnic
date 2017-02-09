@@ -316,12 +316,12 @@ class RpslTest extends TestCase
     {
         $obj = new RPSL\PeeringSet('PRNG-EXAMPLENET');
         // add required attributes
-        $obj->setAttribute('descr', 'test peering')
-            ->setAttribute('tech-c', 'TEST-APNIC')
-            ->setAttribute('admin-c', 'TEST-APNIC')
-            ->setAttribute('mnt-by', 'MAINT-EU-TEST')
-            ->setAttribute('changed', 'hostmaster@example.com')
-            ->setAttribute('source', 'APNIC')
+        $obj->set('descr', 'test peering')
+            ->set('tech-c', 'TEST-APNIC')
+            ->set('admin-c', 'TEST-APNIC')
+            ->set('mnt-by', 'MAINT-EU-TEST')
+            ->set('changed', 'hostmaster@example.com')
+            ->set('source', 'APNIC')
         ;
         // either peering attribute makes it valid:
         $this->assertFalse($obj->isValid());

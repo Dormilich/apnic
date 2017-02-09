@@ -11,7 +11,6 @@ class ObjectTest extends TestCase
         $obj = new Object('foo');
 
         $this->assertSame('test', $obj->getType());
-        $this->assertSame('test', $obj->getPrimaryKeyName());
         $this->assertSame('foo',  $obj->getPrimaryKey());
     }
 
@@ -27,7 +26,7 @@ class ObjectTest extends TestCase
     public function testGetAttributeObject()
     {
         $obj = new Object('foo');
-        $attr = $obj->getAttribute('test');
+        $attr = $obj->attr('test');
 
         $this->assertInstanceOf('Dormilich\APNIC\Attribute', $attr);
     }
@@ -35,7 +34,7 @@ class ObjectTest extends TestCase
     public function testGetGeneratedAttributeObject()
     {
         $obj = new Object('foo');
-        $attr = $obj->getAttribute('last-modified');
+        $attr = $obj->attr('last-modified');
 
         $this->assertInstanceOf('Dormilich\APNIC\Attribute', $attr);
     }
@@ -47,51 +46,51 @@ class ObjectTest extends TestCase
     public function testGetUndefinedAttributeFails()
     {
         $obj = new Object('foo');
-        $attr = $obj->getAttribute(1);
+        $attr = $obj->attr(1);
     }
 
     public function testSetMultipleAttributeValue()
     {
         $obj = new Object('foo');
 
-        $obj->setAttribute('comment', 'x');
-        $this->assertEquals(['x'], $obj->getAttribute('comment')->getValue());
+        $obj->set('comment', 'x');
+        $this->assertEquals(['x'], $obj->attr('comment')->getValue());
 
-        $obj->setAttribute('comment', 'y');
-        $this->assertEquals(['y'], $obj->getAttribute('comment')->getValue());
+        $obj->set('comment', 'y');
+        $this->assertEquals(['y'], $obj->attr('comment')->getValue());
     }
 
     public function testSetSingleAttributeValue()
     {
         $obj = new Object('foo');
 
-        $obj->setAttribute('name', 'x');
-        $this->assertEquals('x', $obj->getAttribute('name')->getValue());
+        $obj->set('name', 'x');
+        $this->assertEquals('x', $obj->attr('name')->getValue());
 
-        $obj->setAttribute('name', 'y');
-        $this->assertEquals('y', $obj->getAttribute('name')->getValue());
+        $obj->set('name', 'y');
+        $this->assertEquals('y', $obj->attr('name')->getValue());
     }
 
     public function testAddMultipleAttributeValue()
     {
         $obj = new Object('foo');
 
-        $obj->addAttribute('comment', 'x');
-        $this->assertEquals(['x'], $obj->getAttribute('comment')->getValue());
+        $obj->add('comment', 'x');
+        $this->assertEquals(['x'], $obj->attr('comment')->getValue());
 
-        $obj->addAttribute('comment', 'y');
-        $this->assertEquals(['x', 'y'], $obj->getAttribute('comment')->getValue());
+        $obj->add('comment', 'y');
+        $this->assertEquals(['x', 'y'], $obj->attr('comment')->getValue());
     }
 
     public function testAddSingleAttributeValue()
     {
         $obj = new Object('foo');
 
-        $obj->addAttribute('name', 'x');
-        $this->assertEquals('x', $obj->getAttribute('name')->getValue());
+        $obj->add('name', 'x');
+        $this->assertEquals('x', $obj->attr('name')->getValue());
 
-        $obj->addAttribute('name', 'y');
-        $this->assertEquals('y', $obj->getAttribute('name')->getValue());
+        $obj->add('name', 'y');
+        $this->assertEquals('y', $obj->attr('name')->getValue());
     }
 
     public function testGetAttributeValueDirectly()

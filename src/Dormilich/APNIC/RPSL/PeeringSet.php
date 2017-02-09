@@ -50,8 +50,8 @@ class PeeringSet extends Object
      */
     public function isValid()
     {
-        $peer4 = $this->getAttribute('peering')->isDefined();
-        $peer6 = $this->getAttribute('mp-peering')->isDefined();
+        $peer4 = $this->attr('peering')->isDefined();
+        $peer6 = $this->attr('mp-peering')->isDefined();
 
         return parent::isValid() and ( $peer4 or $peer6 );
     }

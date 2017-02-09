@@ -88,8 +88,8 @@ class ValidationTest extends TestCase
     {
         $obj = new Object('foo');
         // taken from the APNIC docs
-        $obj->addAttribute('fax-no', '+12 34 567890 010')
-            ->addAttribute('fax-no', '+681 368 0844 ext. 32')
+        $obj->add('fax-no', '+12 34 567890 010')
+            ->add('fax-no', '+681 368 0844 ext. 32')
         ;
         $expected = ['+12 34 567890 010', '+681 368 0844 ext. 32'];
         $this->assertEquals($expected, $obj['fax-no']);

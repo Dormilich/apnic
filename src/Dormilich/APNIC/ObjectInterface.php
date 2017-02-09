@@ -20,22 +20,13 @@ interface ObjectInterface
     public function getPrimaryKey();
 
     /**
-     * Get the name of the PK via function. 
-     * Conformance function to overwrite in the Dummy class, 
-     * which can not use a constant to store the PK.
-     * 
-     * @return string
-     */
-    public function getPrimaryKeyName();
-
-    /**
      * Get an attribute specified by name.
      * 
      * @param string $name Name of the attribute.
      * @return AttributeInterface Attribute object.
      * @throws InvalidAttributeException Invalid argument name.
      */
-    public function getAttribute( $name );
+    public function attr( $name );
 
     /**
      * Get the keys for the attributes (no matter whether they’re defined or not).

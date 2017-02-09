@@ -48,7 +48,7 @@ class WhoisParser
                 continue;
             }
             // need the reassignment, otherwise the switch from NULL to Object fails
-            $object = $this->addAttribute( $object, $match[ 1 ], $match[ 2 ] );
+            $object = $this->add( $object, $match[ 1 ], $match[ 2 ] );
 
             if ( $match[ 1 ] === 'source' ) {
                 break;
@@ -135,10 +135,10 @@ class WhoisParser
      * @return ObjectInterface Updated/created RPSL object.
      * @throws UnexpectedValueException No class for this attribute name found.
      */
-    private function addAttribute( $obj, $name, $value )
+    private function add( $obj, $name, $value )
     {
         if ( $obj ) {
-            $obj->addAttribute( $name, $value );
+            $obj->add( $name, $value );
         } else {
             $obj = $this->createObject( $name, $value );
         }
@@ -161,7 +161,7 @@ class WhoisParser
         // thus leaving it empty and set the type’s attribute explicitly, 
         // which is the PK for any other object
         $object = new $class( NULL );
-        $object->setAttribute( $name, $value );
+        $object->set( $name, $value );
 
         return $object;
     }

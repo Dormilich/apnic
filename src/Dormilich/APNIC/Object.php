@@ -66,7 +66,7 @@ abstract class Object implements ObjectInterface, ArrayInterface, \ArrayAccess, 
     {
         if ( NULL === $this->primaryKey ) {
             $this->primaryKey = $name;
-            $this->getAttribute( $name )->setValue( $value );
+            $this->attr( $name )->setValue( $value );
         }
 
         return $this;
@@ -162,19 +162,7 @@ abstract class Object implements ObjectInterface, ArrayInterface, \ArrayAccess, 
      */
     public function getPrimaryKey()
     {
-        return $this->getAttribute( $this->primaryKey )->getValue();
-    }
-
-    /**
-     * Get the name of the PK via function. 
-     * Conformance function to overwrite in the Dummy class, 
-     * which can not use a constant to store the PK.
-     * 
-     * @return string
-     */
-    public function getPrimaryKeyName()
-    {
-        return $this->primaryKey;
+        return $this->attr( $this->primaryKey )->getValue();
     }
 
     /**
@@ -191,10 +179,10 @@ abstract class Object implements ObjectInterface, ArrayInterface, \ArrayAccess, 
      * Get an attribute specified by name.
      * 
      * @param string $name Name of the attribute.
-     * @return Attribute Attribute object.
+     * @return AttributeInterface Attribute object.
      * @throws InvalidAttributeException Invalid argument name.
      */
-    public function getAttribute( $name )
+    public function attr( $name )
     {
         if ( isset( $this->attributes[ $name ] ) ) {
             return $this->attributes[ $name ];
@@ -209,15 +197,26 @@ abstract class Object implements ObjectInterface, ArrayInterface, \ArrayAccess, 
     }
 
     /**
+     * Get an attribute’s value(s).
+     * 
+     * @param string $name Attribute name.
+     * @return string[]|string|NULL Attribute value(s).
+     */
+    public function get( $name )
+    {
+        return $this->attr( $name )->getValue();
+    }
+
+    /**
      * Set an attribute’s value(s).
      * 
      * @param string $name Attribute name.
      * @param mixed $value Attibute value(s).
      * @return self
      */
-    public function setAttribute( $name, $value )
+    public function set( $name, $value )
     {
-        $this->getAttribute( $name )->setValue( $value );
+        $this->attr( $name )->setValue( $value );
 
         return $this;
     }
@@ -229,9 +228,9 @@ abstract class Object implements ObjectInterface, ArrayInterface, \ArrayAccess, 
      * @param mixed $value Attibute value(s).
      * @return self
      */
-    public function addAttribute( $name, $value )
+    public function add( $name, $value )
     {
-        $this->getAttribute( $name )->addValue( $value );
+        $this->attr( $name )->addValue( $value );
 
         return $this;
     }
@@ -260,7 +259,8 @@ abstract class Object implements ObjectInterface, ArrayInterface, \ArrayAccess, 
      */
     public function offsetExists( $offset )
     {
-        return isset( $this->attributes[ $offset ] ); 
+        return isset( $this->attributes[ $offset ] ) 
+            or isset( $this->generated[ $offset ] ); 
     }
 
     /**
@@ -272,12 +272,12 @@ abstract class Object implements ObjectInterface, ArrayInterface, \ArrayAccess, 
      */
     public function offsetGet( $offset )
     {
-        return $this->getAttribute( $offset )->getValue();
+        return $this->attr( $offset )->getValue();
     }
 
     /**
      * Set an Attibute’s value. Existing values will be replaced. 
-     * For adding values use Object::addAttribute().
+     * For adding values use Object::add().
      * 
      * @param string $offset Attribute name.
      * @param type $value New Attribute value.
@@ -286,7 +286,7 @@ abstract class Object implements ObjectInterface, ArrayInterface, \ArrayAccess, 
      */
     public function offsetSet( $offset, $value )
     {
-        $this->setAttribute( $offset, $value );
+        $this->set( $offset, $value );
     }
 
     /**
@@ -298,7 +298,7 @@ abstract class Object implements ObjectInterface, ArrayInterface, \ArrayAccess, 
     public function offsetUnset( $offset )
     {
         if (isset($this->attributes[ $offset ])) {
-            $this->setAttribute( $offset, NULL );
+            $this->set( $offset, NULL );
         }
     }
 
