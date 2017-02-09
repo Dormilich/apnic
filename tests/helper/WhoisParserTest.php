@@ -109,4 +109,22 @@ TXT;
 
         $this->assertNull( $obj );
     }
+
+    public function testParseMultipleObjects()
+    {
+        $text = $this->loadText( 'maint-example-hk' );
+        $parser = new WhoisParser;
+        $data = $parser->parseAll( $text );
+
+        $this->assertCount( 2, $data );
+
+        $this->assertArrayHasKey( 'MAINT-EXAMPLE-HK', $data );
+        $this->assertArrayHasKey( 'XL1-AP', $data );
+
+        $this->assertInstanceOf( Mntner::class, $data[ 'MAINT-EXAMPLE-HK' ] );
+        $this->assertInstanceOf( Role::class, $data[ 'XL1-AP' ] );
+
+        // Mntner is not valid due to filtered auth data
+        $this->assertTrue( $data[ 'XL1-AP' ]->isValid() );
+    }
 }

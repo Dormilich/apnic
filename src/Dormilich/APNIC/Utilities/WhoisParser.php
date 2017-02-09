@@ -59,6 +59,32 @@ class WhoisParser
     }
 
     /**
+     * Parse all RPSL objects out of a text by splitting the text into sections 
+     * (separated by two line breaks) and return an array with the object handle 
+     * as array key.
+     * 
+     * @param string $text Text block.
+     * @return ObjectInterface[] An object for each RPSL block.
+     * @throws RuntimeException Error line found.
+     * @throws UnexpectedValueException Could not create object for an RPSL block.
+     */
+    public function parseAll( $text )
+    {
+        $text = str_replace( "\r\n", "\n", $text );
+        $sections = explode( "\n\n", $text );
+
+        $objects = array_map( [$this, 'parse'], $sections );
+        $objects = array_filter( $objects, 'is_object' );
+
+        $list = array_reduce( $objects, function ( array $list, ObjectInterface $obj ) {
+            $list[ $obj->getPrimaryKey() ] = $obj;
+            return $list;
+        }, [] );
+
+        return $list;
+    }
+
+    /**
      * Convert the text block into an array of lines by splitting on LF.
      * 
      * @param string $text Text block.

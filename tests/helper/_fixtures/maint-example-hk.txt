@@ -30,6 +30,3 @@ changed:        hm-changed@apnic.net 19700101
 source:         APNIC
 
 % This query was served by the APNIC Whois Service version 1.69.1-APNICv1r0 (UNDEFINED)
-
-
-fgets: Connection reset by peer
