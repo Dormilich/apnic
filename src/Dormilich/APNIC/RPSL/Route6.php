@@ -9,6 +9,8 @@ use Dormilich\APNIC\Exceptions\InvalidValueException;
 
 class Route6 extends Object
 {
+    const VERSION = '1.69';
+
     /**
      * Create a ROUTE6 RPSL object.
      * 

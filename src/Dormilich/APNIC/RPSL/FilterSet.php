@@ -9,6 +9,8 @@ use Dormilich\APNIC\Exceptions\InvalidValueException;
 
 class FilterSet extends Object
 {
+    const VERSION = '1.69';
+
     /**
      * Create a FILTER-SET RPSL object.
      * 

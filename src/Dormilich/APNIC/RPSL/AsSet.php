@@ -8,6 +8,8 @@ use Dormilich\APNIC\AttributeInterface as Attr;
 
 class AsSet extends Object
 {
+    const VERSION = '1.69';
+
     /**
      * Create an AS-SET RPSL object.
      * 

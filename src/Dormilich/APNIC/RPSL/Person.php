@@ -8,6 +8,8 @@ use Dormilich\APNIC\AttributeInterface as Attr;
 
 class Person extends Object
 {
+    const VERSION = '1.69';
+
     /**
      * Create a PERSON RPSL object.
      * 

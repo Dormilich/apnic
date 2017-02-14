@@ -9,6 +9,8 @@ use Dormilich\APNIC\Exceptions\InvalidValueException;
 
 class InetRtr extends Object
 {
+    const VERSION = '1.69';
+
     /**
      * Create a router (INET-RTR) RPSL object.
      * 

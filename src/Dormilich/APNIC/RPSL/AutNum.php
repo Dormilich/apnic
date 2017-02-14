@@ -7,12 +7,10 @@ use Dormilich\APNIC\Object;
 use Dormilich\APNIC\AttributeInterface as Attr;
 use Dormilich\APNIC\Exceptions\InvalidValueException;
 
-/**
- * Be aware that the 'sponsoring-org' and 'status' attributes 
- * must not be set/updated/deleted by the user.
- */
 class AutNum extends Object
 {
+    const VERSION = '1.69';
+
     /**
      * Create an AUTONOMOUS NUMBER (AUT-NUM) RPSL object.
      * 

@@ -9,6 +9,8 @@ use Dormilich\APNIC\Exceptions\InvalidValueException;
 
 class PeeringSet extends Object
 {
+    const VERSION = '1.69';
+
     /**
      * Create a PEERING-SET RPSL object.
      * 

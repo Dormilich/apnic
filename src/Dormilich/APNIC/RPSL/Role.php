@@ -8,6 +8,8 @@ use Dormilich\APNIC\AttributeInterface as Attr;
 
 class Role extends Object
 {
+    const VERSION = '1.69';
+
     /**
      * Create a ROLE RPSL object.
      * 

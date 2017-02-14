@@ -8,6 +8,8 @@ use Dormilich\APNIC\AttributeInterface as Attr;
 
 class Irt extends Object
 {
+    const VERSION = '1.69';
+
     /**
      * Create an incident response team (IRT) RPSL object.
      * 

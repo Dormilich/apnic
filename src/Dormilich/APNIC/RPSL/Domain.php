@@ -9,6 +9,8 @@ use Dormilich\APNIC\Exceptions\InvalidValueException;
 
 class Domain extends Object
 {
+    const VERSION = '1.69';
+
     /**
      * Create a DOMAIN RPSL object.
      * 

@@ -8,6 +8,8 @@ use Dormilich\APNIC\AttributeInterface as Attr;
 
 class RouteSet extends Object
 {
+    const VERSION = '1.69';
+
     /**
      * Create a ROUTE-SET RPSL object.
      * 

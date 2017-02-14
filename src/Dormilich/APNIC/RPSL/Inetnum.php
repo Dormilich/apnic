@@ -9,6 +9,8 @@ use Dormilich\APNIC\Exceptions\InvalidValueException;
 
 class Inetnum extends Object
 {
+    const VERSION = '1.69';
+
     /**
      * Create an INETNUM RPSL object.
      * 

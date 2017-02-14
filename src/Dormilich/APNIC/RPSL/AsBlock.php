@@ -8,6 +8,8 @@ use Dormilich\APNIC\AttributeInterface as Attr;
 
 class AsBlock extends Object
 {
+    const VERSION = '1.69';
+
     /**
      * Create a AS-BLOCK object.
      * 

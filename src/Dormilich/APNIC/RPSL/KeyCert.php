@@ -13,6 +13,8 @@ use Dormilich\APNIC\Exceptions\InvalidValueException;
  */
 class KeyCert extends Object
 {
+    const VERSION = '1.69';
+
     /**
      * Create a key certification (KEY-CERT) RPSL object.
      * 
