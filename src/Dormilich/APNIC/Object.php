@@ -5,7 +5,7 @@ namespace Dormilich\APNIC;
 
 use ArrayAccess;
 use Countable;
-use IteratorAggregate;
+use Iterator;
 use Dormilich\APNIC\Exceptions\IncompleteRPSLObjectException;
 use Dormilich\APNIC\Exceptions\InvalidAttributeException;
 use Dormilich\APNIC\Exceptions\InvalidDataTypeException;
@@ -24,7 +24,7 @@ use Dormilich\APNIC\Exceptions\InvalidValueException;
  *  - set the primary key on instantiation
  *  - set a "VERSION" constant
  */
-abstract class Object implements ObjectInterface, ArrayInterface, ArrayAccess, IteratorAggregate, Countable
+abstract class Object implements ObjectInterface, ArrayAccess, Iterator, Countable
 {
     /**
      * The type of the object.
@@ -258,6 +258,7 @@ abstract class Object implements ObjectInterface, ArrayInterface, ArrayAccess, I
     /**
      * Checks if an Attribute exists, but not if it is populated.
      * 
+     * @see http://php.net/ArrayAccess
      * @param mixed $offset The array key.
      * @return boolean
      */
@@ -270,62 +271,103 @@ abstract class Object implements ObjectInterface, ArrayInterface, ArrayAccess, I
     /**
      * Get the value of the specified Attribute.
      * 
+     * @see http://php.net/ArrayAccess
      * @param string $offset Attribute name.
      * @return string|array Attribute value.
-     * @throws OutOfBoundsException Attribute does not exist.
      */
     public function offsetGet( $offset )
     {
-        return $this->attr( $offset )->getValue();
+        if ( $this->offsetExists( $offset ) ) {
+            return $this->attr( $offset )->getValue();
+        }
+
+        return NULL;
     }
 
     /**
      * Set an Attibute’s value. Existing values will be replaced. 
      * For adding values use Object::add().
      * 
+     * @see http://php.net/ArrayAccess
      * @param string $offset Attribute name.
      * @param type $value New Attribute value.
      * @return void
-     * @throws OutOfBoundsException Attribute does not exist.
      */
     public function offsetSet( $offset, $value )
     {
-        $this->set( $offset, $value );
+        if ( $this->offsetExists( $offset ) ) {
+            $this->attr( $offset )->setValue( $value );
+        }
     }
 
     /**
      * Reset an Attribute’s value.
      * 
+     * @see http://php.net/ArrayAccess
      * @param string $offset Attribute name.
      * @return void
      */
     public function offsetUnset( $offset )
     {
-        if ( isset( $this->attributes[ $offset ] ) ) {
-            $this->set( $offset, NULL );
+        if ( $this->offsetExists( $offset ) ) {
+            $this->attr( $offset )->setValue( NULL );
         }
-    }
-
-    /**
-     * Create an Iterator for use in foreach. Only the populated Attributes are 
-     * passed. This creates a clone of the Attributes array and hence does not 
-     * modify the original set.
-     * 
-     * @return Iterator Read-only access to all defined attributes
-     */
-    public function getIterator()
-    {
-        return new ObjectIterator( $this );
     }
 
     /**
      * Return the number of defined Attributes.
      * 
+     * @see http://php.net/Countable
      * @return integer
      */
     public function count()
     {
         return count( $this->getDefinedAttributes() );
+    }
+
+    /**
+     * @see http://php.net/Iterator
+     * @return void
+     */
+    public function rewind()
+    {
+        reset( $this->attributes );
+    }
+    
+    /**
+     * @see http://php.net/Iterator
+     * @return string
+     */
+    public function current()
+    {
+        return current( $this->attributes );
+    }
+    
+    /**
+     * @see http://php.net/Iterator
+     * @return integer
+     */
+    public function key()
+    {
+        return key( $this->attributes );
+    }
+    
+    /**
+     * @see http://php.net/Iterator
+     * @return void
+     */
+    public function next()
+    {
+        next( $this->attributes );
+    }
+    
+    /**
+     * @see http://php.net/Iterator
+     * @return boolean
+     */
+    public function valid()
+    {
+        return NULL !== key( $this->attributes );
     }
 
     /**
