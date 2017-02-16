@@ -492,7 +492,7 @@ abstract class Object implements ObjectInterface, ArrayAccess, Iterator, Countab
     protected function validateHandle( $handle )
     {
         if ( ! preg_match( '~[^A-Z0-9-]~', $handle ) ) {
-            return $handle;
+            return trim( $handle, '-' );
         }
 
         throw new InvalidValueException( 'Invalid RPSL object handle' );

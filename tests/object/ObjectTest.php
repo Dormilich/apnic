@@ -174,12 +174,12 @@ class ObjectTest extends TestCase
 
         $this->assertGreaterThan(0, count($obj));
 
-        $keys = $values = [];
-        foreach ($obj as $key => $value) {
-            $keys[]   = $key;
-            $values[] = $value;
+        $names = $defined = [];
+        foreach ($obj as $attr) {
+            $names[] = $attr->getName();
+            $defined[] = $attr->isDefined();
         }
-        $this->assertEquals(['test', 'comment', 'comment'], $keys);
-        $this->assertEquals(['foo', 'fizz', 'buzz'], $values);
+        $this->assertEquals(['test', 'name', 'comment'], $names);
+        $this->assertEquals([true, false, true], $defined);
     }
 }

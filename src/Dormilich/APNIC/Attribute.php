@@ -9,7 +9,7 @@ use JsonSerializable;
 use Traversable;
 use Dormilich\APNIC\Exceptions\InvalidDataTypeException;
 
-class Attribute implements AttributeInterface, ArrayInterface, Countable, Iterator, JsonSerializable
+class Attribute implements AttributeInterface, Countable, Iterator, JsonSerializable
 {
     /**
      * @var string
