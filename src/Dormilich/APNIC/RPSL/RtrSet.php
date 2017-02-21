@@ -19,8 +19,10 @@ class RtrSet extends Object
     public function __construct($value)
     {
         $this->init();
-        $this->setType('rtr-set');
-        $this->setKey('rtr-set', $value);
+        $this->setType( 'rtr-set' );
+        $this->setKey( [
+            'rtr-set' => $value,
+        ] );
     }
 
     /**
@@ -30,18 +32,20 @@ class RtrSet extends Object
      */
     protected function init()
     {
-        $this->create('rtr-set',     Attr::REQUIRED, Attr::SINGLE);
-        $this->create('descr',       Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('members',     Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('mp-members',  Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('mbrs-by-ref', Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('remarks',     Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('tech-c',      Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('admin-c',     Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('notify',      Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('mnt-by',      Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('mnt-lower',   Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('changed',     Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('source',      Attr::REQUIRED, Attr::SINGLE)->apply('strtoupper');
+        $this->create( 'rtr-set', Attr::REQUIRED, Attr::SINGLE );           # 1 +
+        $this->create( 'descr', Attr::REQUIRED, Attr::MULTIPLE );           # m +
+        $this->create( 'members', Attr::OPTIONAL, Attr::MULTIPLE );         # m
+        $this->create( 'mp-members', Attr::OPTIONAL, Attr::MULTIPLE );      # m
+        $this->create( 'mbrs-by-ref', Attr::OPTIONAL, Attr::MULTIPLE );     # m
+        $this->create( 'remarks', Attr::OPTIONAL, Attr::MULTIPLE );         # m
+        $this->create( 'org', Attr::OPTIONAL, Attr::MULTIPLE );             # m
+        $this->create( 'tech-c', Attr::REQUIRED, Attr::MULTIPLE );          # m +
+        $this->create( 'admin-c', Attr::REQUIRED, Attr::MULTIPLE );         # m +
+        $this->create( 'notify', Attr::OPTIONAL, Attr::MULTIPLE );          # m
+        $this->create( 'mnt-by', Attr::REQUIRED, Attr::MULTIPLE );          # m +
+        $this->create( 'mnt-lower', Attr::OPTIONAL, Attr::MULTIPLE );       # m
+        $this->create( 'changed', Attr::REQUIRED, Attr::MULTIPLE );         # m +
+        $this->create( 'source', Attr::REQUIRED, Attr::SINGLE )             # 1 +
+            ->apply( 'strtoupper' );
     }
 }

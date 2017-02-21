@@ -17,11 +17,13 @@ class Domain extends Object
      * @param string $value The reverse delegetion address/range.
      * @return self
      */
-    public function __construct($value)
+    public function __construct( $value )
     {
         $this->init();
-        $this->setType('domain');
-        $this->setKey('domain', $value);
+        $this->setType( 'domain' );
+        $this->setKey( [
+            'domain' => $value,
+        ] );
     }
 
     /**
@@ -31,22 +33,22 @@ class Domain extends Object
      */
     protected function init()
     {
-        $this->create('domain',    Attr::REQUIRED, Attr::SINGLE);
-        $this->create('descr',     Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('country',   Attr::REQUIRED, Attr::SINGLE);
-        $this->create('admin-c',   Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('tech-c',    Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('zone-c',    Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('nserver',   Attr::REQUIRED, Attr::MULTIPLE);
-        #$this->create('sub-dom',   Attr::OPTIONAL, Attr::MULTIPLE);
-        #$this->create('dom-net',   Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('remarks',   Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('notify',    Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('mnt-by',    Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('mnt-lower', Attr::OPTIONAL, Attr::MULTIPLE);
-        #$this->create('refer',     Attr::OPTIONAL, Attr::SINGLE);
-        $this->create('changed',   Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('source',    Attr::REQUIRED, Attr::SINGLE)->apply('strtoupper');
+        $this->create( 'domain', Attr::REQUIRED, Attr::SINGLE );            # 1 +
+        $this->create( 'descr', Attr::REQUIRED, Attr::MULTIPLE );           # m +
+        $this->create( 'country', Attr::OPTIONAL, Attr::SINGLE );           # 1
+        $this->create( 'org', Attr::OPTIONAL, Attr::MULTIPLE );             # m
+        $this->create( 'admin-c', Attr::REQUIRED, Attr::MULTIPLE );         # m +
+        $this->create( 'tech-c', Attr::REQUIRED, Attr::MULTIPLE );          # m +
+        $this->create( 'zone-c', Attr::REQUIRED, Attr::MULTIPLE );          # m +
+        $this->create( 'nserver', Attr::REQUIRED, Attr::MULTIPLE );         # m
+        $this->create( 'ds-rdata', Attr::OPTIONAL, Attr::MULTIPLE );        # m
+        $this->create( 'remarks', Attr::OPTIONAL, Attr::MULTIPLE );         # m
+        $this->create( 'notify', Attr::OPTIONAL, Attr::MULTIPLE );          # m
+        $this->create( 'mnt-by', Attr::REQUIRED, Attr::MULTIPLE );          # m +
+        $this->create( 'mnt-lower', Attr::OPTIONAL, Attr::MULTIPLE );       # m
+        $this->create( 'changed', Attr::REQUIRED, Attr::MULTIPLE );         # m +
+        $this->create( 'source', Attr::REQUIRED, Attr::SINGLE )             # 1 +
+            ->apply( 'strtoupper' );
     }
 
     public function domain( $input )

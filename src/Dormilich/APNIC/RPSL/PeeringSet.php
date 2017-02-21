@@ -20,8 +20,10 @@ class PeeringSet extends Object
     public function __construct($value)
     {
         $this->init();
-        $this->setType('peering-set');
-        $this->setKey('peering-set', $value);
+        $this->setType( 'peering-set' );
+        $this->setKey( [
+            'peering-set' => $value,
+        ] );
     }
 
     /**
@@ -31,18 +33,31 @@ class PeeringSet extends Object
      */
     protected function init()
     {
-        $this->create('peering-set', Attr::REQUIRED, Attr::SINGLE);
-        $this->create('descr',       Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('peering',     Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('mp-peering',  Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('remarks',     Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('tech-c',      Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('admin-c',     Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('notify',      Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('mnt-by',      Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('mnt-lower',   Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('changed',     Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('source',      Attr::REQUIRED, Attr::SINGLE)->apply('strtoupper');
+        $this->create( 'peering-set', Attr::REQUIRED, Attr::SINGLE );       # 1 +
+        $this->create( 'descr', Attr::REQUIRED, Attr::MULTIPLE );           # m +
+        $this->create( 'peering', Attr::OPTIONAL, Attr::MULTIPLE );         # m
+        $this->create( 'mp-peering', Attr::OPTIONAL, Attr::MULTIPLE );      # m
+        $this->create( 'remarks', Attr::OPTIONAL, Attr::MULTIPLE );         # m
+        $this->create( 'org', Attr::OPTIONAL, Attr::MULTIPLE );             # m
+        $this->create( 'tech-c', Attr::REQUIRED, Attr::MULTIPLE );          # m +
+        $this->create( 'admin-c', Attr::REQUIRED, Attr::MULTIPLE );         # m +
+        $this->create( 'notify', Attr::OPTIONAL, Attr::MULTIPLE );          # m
+        $this->create( 'mnt-by', Attr::REQUIRED, Attr::MULTIPLE );          # m +
+        $this->create( 'mnt-lower', Attr::OPTIONAL, Attr::MULTIPLE );       # m
+        $this->create( 'changed', Attr::REQUIRED, Attr::MULTIPLE );         # m +
+        $this->create( 'source', Attr::REQUIRED, Attr::SINGLE )             # 1 +
+            ->apply( 'strtoupper' );
+    }
+
+    public function peeringSet( $input )
+    {
+        $input = strtoupper( $input );
+
+        if ( strpos( $input, 'PRNG-' ) === 0) {
+            return $input;
+        }
+
+        throw new InvalidValueException( 'Invalid peering-set name' );
     }
 
     /**
@@ -52,19 +67,9 @@ class PeeringSet extends Object
      */
     public function isValid()
     {
-        $peer4 = $this->attr('peering')->isDefined();
-        $peer6 = $this->attr('mp-peering')->isDefined();
+        $peer4 = $this->attr( 'peering' )->isDefined();
+        $peer6 = $this->attr( 'mp-peering' )->isDefined();
 
         return parent::isValid() and ( $peer4 or $peer6 );
-    }
-
-    public function peeringSet( $input )
-    {
-        $input = strtoupper( $input );
-        if ( strpos( $input, 'PRNG-' ) === 0) {
-            return $input;
-        }
-
-        throw new InvalidValueException( 'Invalid peering-set name' );
     }
 }

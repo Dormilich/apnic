@@ -21,6 +21,7 @@ class Route6 extends Object
     {
         $this->init();
         $this->setType( 'route6' );
+
         $this->parseKey( $value );
     }
 
@@ -32,47 +33,22 @@ class Route6 extends Object
      */
     private function parseKey( $value )
     {
-        if ( $value instanceof Inet6num ) {
-            $value = $value->getPrimaryKey();
+        if ( $value instanceof self ) {
+            $value = $value->getHandle();
         }
 
-        if ( is_scalar( $value ) ) {
-            $value = $this->setOrigin( $value );
-            $this->setKey( 'route6', $value );
-        }
-    }
+        $pk = [ 'route6' => NULL, 'origin' => NULL ];
 
-    /**
-     * Extract the origin part from the primary key candidate.
-     * 
-     * @param string $value String passed as PK.
-     * @return string Input with the ASN removed.
-     */
-    private function setOrigin( $value )
-    {
         if ( preg_match( '/AS\d+/', $value, $match ) === 1 ) {
-            $this->set( 'origin', $match[ 0 ] );
+            $pk[ 'origin' ] = $match[ 0 ];
             $value = str_replace( $match[ 0 ], '', $value );
         }
 
-        return trim( $value );
-    }
+        $pk[ 'route6' ] = trim( $value );
 
-    /**
-     * Get the composite primary key. If either attribute is not set, return null.
-     * 
-     * @return string|NULL
-     */
-    public function getPrimaryKey()
-    {
-        $route6 = $this->get( 'route6' );
-        $origin = $this->get( 'origin' );
-
-        if ( $route6 and $origin ) {
-            return $route6 . $origin;
+        if ( isset( $pk[ 'route6' ], $pk[ 'origin' ] ) ) {
+            $this->setKey( $pk );
         }
-
-        return NULL;
     }
 
     /**
@@ -82,24 +58,25 @@ class Route6 extends Object
      */
     protected function init()
     {
-        $this->create( 'route6', Attr::REQUIRED, Attr::SINGLE );        # 1 +
-        $this->create( 'descr', Attr::REQUIRED, Attr::MULTIPLE );       # m +
-        $this->create( 'country', Attr::OPTIONAL, Attr::SINGLE );       # 1
-        $this->create( 'origin', Attr::REQUIRED, Attr::SINGLE );        # 1 +
-        $this->create( 'holes', Attr::OPTIONAL, Attr::MULTIPLE );       # m
-        $this->create( 'member-of', Attr::OPTIONAL, Attr::MULTIPLE );   # m
-        $this->create( 'inject', Attr::OPTIONAL, Attr::MULTIPLE );      # m
-        $this->create( 'aggr-mtd', Attr::OPTIONAL, Attr::SINGLE );      # 1
-        $this->create( 'aggr-bndry', Attr::OPTIONAL, Attr::SINGLE );    # 1
-        $this->create( 'export-comps', Attr::OPTIONAL, Attr::SINGLE );  # 1
-        $this->create( 'components', Attr::OPTIONAL, Attr::SINGLE );    # 1
-        $this->create( 'remarks', Attr::OPTIONAL, Attr::MULTIPLE );     # m
-        $this->create( 'notify', Attr::OPTIONAL, Attr::MULTIPLE );      # m
-        $this->create( 'mnt-lower', Attr::OPTIONAL, Attr::MULTIPLE );   # m
-        $this->create( 'mnt-routes', Attr::OPTIONAL, Attr::MULTIPLE );  # m
-        $this->create( 'mnt-by', Attr::REQUIRED, Attr::MULTIPLE );      # m +
-        $this->create( 'changed', Attr::REQUIRED, Attr::MULTIPLE );     # m +
-        $this->create( 'source', Attr::REQUIRED, Attr::SINGLE )->apply( 'strtoupper' );
+        $this->create( 'route6', Attr::REQUIRED, Attr::SINGLE );            # 1 +
+        $this->create( 'descr', Attr::REQUIRED, Attr::MULTIPLE );           # m +
+        $this->create( 'country', Attr::OPTIONAL, Attr::SINGLE );           # 1
+        $this->create( 'origin', Attr::REQUIRED, Attr::SINGLE );            # 1 +
+        $this->create( 'holes', Attr::OPTIONAL, Attr::MULTIPLE );           # m
+        $this->create( 'member-of', Attr::OPTIONAL, Attr::MULTIPLE );       # m
+        $this->create( 'inject', Attr::OPTIONAL, Attr::MULTIPLE );          # m
+        $this->create( 'aggr-mtd', Attr::OPTIONAL, Attr::SINGLE );          # 1
+        $this->create( 'aggr-bndry', Attr::OPTIONAL, Attr::SINGLE );        # 1
+        $this->create( 'export-comps', Attr::OPTIONAL, Attr::SINGLE );      # 1
+        $this->create( 'components', Attr::OPTIONAL, Attr::SINGLE );        # 1
+        $this->create( 'remarks', Attr::OPTIONAL, Attr::MULTIPLE );         # m
+        $this->create( 'notify', Attr::OPTIONAL, Attr::MULTIPLE );          # m
+        $this->create( 'mnt-lower', Attr::OPTIONAL, Attr::MULTIPLE );       # m
+        $this->create( 'mnt-routes', Attr::OPTIONAL, Attr::MULTIPLE );      # m
+        $this->create( 'mnt-by', Attr::REQUIRED, Attr::MULTIPLE );          # m +
+        $this->create( 'changed', Attr::REQUIRED, Attr::MULTIPLE );         # m +
+        $this->create( 'source', Attr::REQUIRED, Attr::SINGLE )             # 1 +
+            ->apply( 'strtoupper' );
     }
 
     public function route6( $input )

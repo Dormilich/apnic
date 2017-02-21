@@ -16,11 +16,13 @@ class Role extends Object
      * @param string $value NIC handle. If not specified an auto-handle is used.
      * @return self
      */
-    public function __construct($value = 'AUTO-1')
+    public function __construct( $value = 'AUTO-1' )
     {
         $this->init();
-        $this->setType('role');
-        $this->setKey('nic-hdl', $value);
+        $this->setType( 'role' );
+        $this->setKey( [
+            'nic-hdl' => $value,
+        ] );
     }
 
     /**
@@ -30,21 +32,28 @@ class Role extends Object
      */
     protected function init()
     {
-        $this->create('role',     Attr::REQUIRED, Attr::SINGLE);
-        $this->create('address',  Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('country',  Attr::REQUIRED, Attr::SINGLE);
-        $this->create('phone',    Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('fax-no',   Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('e-mail',   Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('admin-c',  Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('tech-c',   Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('nic-hdl',  Attr::REQUIRED, Attr::SINGLE)->apply('strtoupper');
-        $this->create('remarks',  Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('notify',   Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('abuse-mailbox', Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('mnt-by',   Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('changed',  Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('source',   Attr::REQUIRED, Attr::SINGLE)->apply('strtoupper');
+        $this->create( 'role', Attr::REQUIRED, Attr::SINGLE );              # 1 +
+        $this->create( 'address', Attr::REQUIRED, Attr::MULTIPLE );         # m +
+        $this->create( 'country', Attr::REQUIRED, Attr::SINGLE );           # 1 +
+        $this->create( 'phone', Attr::REQUIRED, Attr::MULTIPLE )            # m +
+            ->apply( [$this, 'validatePhone'] );
+        $this->create( 'fax-no', Attr::OPTIONAL, Attr::MULTIPLE )           # m
+            ->apply( [$this, 'validatePhone'] );
+        $this->create( 'e-mail', Attr::REQUIRED, Attr::MULTIPLE )           # m +
+            ->apply( [$this, 'validateEmail'] );
+        $this->create( 'org', Attr::OPTIONAL, Attr::MULTIPLE );             # m
+        $this->create( 'admin-c', Attr::REQUIRED, Attr::MULTIPLE );         # m +
+        $this->create( 'tech-c', Attr::REQUIRED, Attr::MULTIPLE );          # m +
+        $this->create( 'nic-hdl', Attr::REQUIRED, Attr::SINGLE )            # 1 +
+            ->apply( 'strtoupper' );
+        $this->create( 'remarks', Attr::OPTIONAL, Attr::MULTIPLE );         # m
+        $this->create( 'notify', Attr::OPTIONAL, Attr::MULTIPLE );          # m
+        $this->create( 'abuse-mailbox', Attr::OPTIONAL, Attr::MULTIPLE )    # m
+            ->apply( [$this, 'validateEmail'] );
+        $this->create( 'mnt-by', Attr::REQUIRED, Attr::MULTIPLE );          # m +
+        $this->create( 'changed', Attr::REQUIRED, Attr::MULTIPLE );         # m +
+        $this->create( 'source', Attr::REQUIRED, Attr::SINGLE )             # 1 +
+            ->apply( 'strtoupper' );
     }
 
     public function phone( $input )

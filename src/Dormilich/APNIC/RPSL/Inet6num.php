@@ -11,17 +11,26 @@ class Inet6num extends Object
 {
     const VERSION = '1.69';
 
+    const STATUS = [
+        'ALLOCATED PORTABLE',
+        'ALLOCATED NON-PORTABLE',
+        'ASSIGNED PORTABLE',
+        'ASSIGNED NON-PORTABLE',
+    ];
+
     /**
      * Create a INET6NUM RPSL object
      * 
      * @param string $value A block of or a single IPv6 address.
      * @return self
      */
-    public function __construct($value)
+    public function __construct( $value )
     {
         $this->init();
-        $this->setType('inet6num');
-        $this->setKey('inet6num', $value);
+        $this->setType( 'inet6num' );
+        $this->setKey( [
+            'inet6num' => $value,
+        ] );
     }
 
     /**
@@ -31,23 +40,25 @@ class Inet6num extends Object
      */
     protected function init()
     {
-        $this->create('inet6num',   Attr::REQUIRED, Attr::SINGLE);
-        $this->create('netname',    Attr::REQUIRED, Attr::SINGLE);
-        $this->create('descr',      Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('country',    Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('geoloc',     Attr::OPTIONAL, Attr::SINGLE);
-        $this->create('language',   Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('admin-c',    Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('tech-c',     Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('status',     Attr::REQUIRED, Attr::SINGLE);
-        $this->create('remarks',    Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('notify',     Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('mnt-by',     Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('mnt-lower',  Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('mnt-routes', Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('mnt-irt',    Attr::REQUIRED, Attr::SINGLE);
-        $this->create('changed',    Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('source',     Attr::REQUIRED, Attr::SINGLE)->apply('strtoupper');
+        $this->create( 'inet6num', Attr::REQUIRED, Attr::SINGLE );          # 1 +
+        $this->create( 'netname', Attr::REQUIRED, Attr::SINGLE );           # 1 +
+        $this->create( 'descr', Attr::REQUIRED, Attr::MULTIPLE );           # m +
+        $this->create( 'country', Attr::REQUIRED, Attr::MULTIPLE );         # m +
+        $this->create( 'geoloc', Attr::OPTIONAL, Attr::SINGLE );            # 1
+        $this->create( 'language', Attr::OPTIONAL, Attr::MULTIPLE );        # m
+        $this->create( 'org', Attr::OPTIONAL, Attr::SINGLE );               # 1
+        $this->create( 'admin-c', Attr::REQUIRED, Attr::MULTIPLE );         # m +
+        $this->create( 'tech-c', Attr::REQUIRED, Attr::MULTIPLE );          # m +
+        $this->create( 'status', Attr::REQUIRED, Attr::SINGLE );            # 1 +
+        $this->create( 'remarks', Attr::OPTIONAL, Attr::MULTIPLE );         # m
+        $this->create( 'notify', Attr::OPTIONAL, Attr::MULTIPLE );          # m
+        $this->create( 'mnt-by', Attr::REQUIRED, Attr::MULTIPLE );          # m +
+        $this->create( 'mnt-lower', Attr::OPTIONAL, Attr::MULTIPLE );       # m
+        $this->create( 'mnt-routes', Attr::OPTIONAL, Attr::MULTIPLE );      # m
+        $this->create( 'mnt-irt', Attr::REQUIRED, Attr::MULTIPLE );         # m +
+        $this->create( 'changed', Attr::REQUIRED, Attr::MULTIPLE );         # m +
+        $this->create( 'source', Attr::REQUIRED, Attr::SINGLE )             # 1 +
+            ->apply( 'strtoupper' );
     }
 
     public function inet6num( $input )
@@ -69,14 +80,9 @@ class Inet6num extends Object
 
     public function status( $input )
     {
-        $status = [
-            'ALLOCATED PORTABLE', 'ALLOCATED NON-PORTABLE', 
-            'ASSIGNED PORTABLE',  'ASSIGNED NON-PORTABLE',
-        ];
-
         $input = strtoupper( $input );
 
-        if ( in_array( $input, $status, true )) {
+        if ( in_array( $input, self::STATUS, true )) {
             return $input;
         }
 

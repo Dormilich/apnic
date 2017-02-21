@@ -21,11 +21,13 @@ class KeyCert extends Object
      * @param string $value The key ID.
      * @return self
      */
-    public function __construct($value)
+    public function __construct( $value )
     {
         $this->init();
-        $this->setType('key-cert');
-        $this->setKey('key-cert', $value);
+        $this->setType( 'key-cert' );
+        $this->setKey( [
+            'key-cert' => $value,
+        ] );
     }
 
     /**
@@ -35,24 +37,27 @@ class KeyCert extends Object
      */
     protected function init()
     {
-        $this->create('key-cert', Attr::REQUIRED, Attr::SINGLE);
-        $this->create('certif',   Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('remarks',  Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('notify',   Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('admin-c',  Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('tech-c',   Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('mnt-by',   Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('changed',  Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('source',   Attr::REQUIRED, Attr::SINGLE)->apply('strtoupper');
+        $this->create( 'key-cert', Attr::REQUIRED, Attr::SINGLE );          # 1 +
+        $this->setGeneratedAttribute('method', Attr::SINGLE );              # 1 -
+        $this->setGeneratedAttribute('owner', Attr::MULTIPLE );             # m -
+        $this->setGeneratedAttribute('fingerpr', Attr::SINGLE );            # 1 -
+        $this->create( 'certif', Attr::REQUIRED, Attr::MULTIPLE );          # m +
+        $this->create( 'org', Attr::OPTIONAL, Attr::MULTIPLE );             # m
+        $this->create( 'remarks', Attr::OPTIONAL, Attr::MULTIPLE );         # m
+        $this->create( 'notify', Attr::OPTIONAL, Attr::MULTIPLE );          # m
+        $this->create( 'admin-c', Attr::OPTIONAL, Attr::MULTIPLE );         # m
+        $this->create( 'tech-c', Attr::OPTIONAL, Attr::MULTIPLE );          # m
+        $this->create( 'mnt-by', Attr::REQUIRED, Attr::MULTIPLE );          # m +
+        $this->create( 'changed', Attr::REQUIRED, Attr::MULTIPLE );         # m +
+        $this->create( 'source', Attr::REQUIRED, Attr::SINGLE )             # 1 +
+            ->apply( 'strtoupper' );
 
-        $this->setGeneratedAttribute('method',   Attr::SINGLE);
-        $this->setGeneratedAttribute('owner',    Attr::MULTIPLE);
-        $this->setGeneratedAttribute('fingerpr', Attr::SINGLE);
     }
 
     public function keyCert( $input )
     {
         $input = strtoupper( $input );
+
         if ( preg_match( '~^PGPKEY-[0-9A-F]{8}$~', $input ) ) {
             return $input;
         }

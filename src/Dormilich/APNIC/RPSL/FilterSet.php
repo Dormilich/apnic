@@ -17,11 +17,13 @@ class FilterSet extends Object
      * @param string $value The name of the set (of routers).
      * @return self
      */
-    public function __construct($value)
+    public function __construct( $value )
     {
         $this->init();
-        $this->setType('filter-set');
-        $this->setKey('filter-set', $value);
+        $this->setType( 'filter-set' );
+        $this->setKey( [
+            'filter-set' => $value,
+        ] );
     }
 
     /**
@@ -31,24 +33,27 @@ class FilterSet extends Object
      */
     protected function init()
     {
-        $this->create('filter-set',  Attr::REQUIRED, Attr::SINGLE);
-        $this->create('descr',       Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('filter',      Attr::OPTIONAL, Attr::SINGLE);
-        $this->create('mp-filter',   Attr::OPTIONAL, Attr::SINGLE);
-        $this->create('remarks',     Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('tech-c',      Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('admin-c',     Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('notify',      Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('mnt-by',      Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('mnt-lower',   Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('changed',     Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('source',      Attr::REQUIRED, Attr::SINGLE)->apply('strtoupper');
+        $this->create( 'filter-set', Attr::REQUIRED, Attr::SINGLE );        # 1 +
+        $this->create( 'descr', Attr::REQUIRED, Attr::MULTIPLE );           # m +
+        $this->create( 'filter', Attr::OPTIONAL, Attr::SINGLE );            # 1
+        $this->create( 'mp-filter', Attr::OPTIONAL, Attr::SINGLE );         # 1
+        $this->create( 'remarks', Attr::OPTIONAL, Attr::MULTIPLE );         # m
+        $this->create( 'org', Attr::OPTIONAL, Attr::MULTIPLE );             # m
+        $this->create( 'tech-c', Attr::REQUIRED, Attr::MULTIPLE );          # m +
+        $this->create( 'admin-c', Attr::REQUIRED, Attr::MULTIPLE );         # m +
+        $this->create( 'notify', Attr::OPTIONAL, Attr::MULTIPLE );          # m
+        $this->create( 'mnt-by', Attr::REQUIRED, Attr::MULTIPLE );          # m +
+        $this->create( 'mnt-lower', Attr::OPTIONAL, Attr::MULTIPLE );       # m
+        $this->create( 'changed', Attr::REQUIRED, Attr::MULTIPLE );         # m +
+        $this->create( 'source', Attr::REQUIRED, Attr::SINGLE )             # 1 +
+            ->apply( 'strtoupper' );
     }
 
     public function filterSet( $input )
     {
         $input = strtoupper( $input );
-        if ( strpos( $input, 'FLTR-' ) === 0) {
+
+       if ( strpos( $input, 'FLTR-' ) === 0) {
             return $input;
         }
 

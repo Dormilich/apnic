@@ -5,6 +5,7 @@ namespace Dormilich\APNIC\RPSL;
 
 use Dormilich\APNIC\Object;
 use Dormilich\APNIC\AttributeInterface as Attr;
+use Dormilich\APNIC\Exceptions\InvalidValueException;
 
 class Irt extends Object
 {
@@ -16,11 +17,13 @@ class Irt extends Object
      * @param string $value The name for the response team.
      * @return self
      */
-    public function __construct($value)
+    public function __construct( $value )
     {
         $this->init();
-        $this->setType('irt');
-        $this->setKey('irt', $value);
+        $this->setType( 'irt' );
+        $this->setKey( [
+            'irt' => $value,
+        ] );
     }
 
     /**
@@ -30,47 +33,40 @@ class Irt extends Object
      */
     protected function init()
     {
-        $this->create('irt',        Attr::REQUIRED, Attr::SINGLE);
-        $this->create('address',    Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('phone',      Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('fax-no',     Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('e-mail',     Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('abuse-mailbox', Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('signature',  Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('encryption', Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('admin-c',    Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('tech-c',     Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('auth',       Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('remarks',    Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('irt-nfy',    Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('notify',     Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('mnt-by',     Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('changed',    Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('source',     Attr::REQUIRED, Attr::SINGLE)->apply('strtoupper');
+        $this->create( 'irt', Attr::REQUIRED, Attr::SINGLE );               # 1 +
+        $this->create( 'address', Attr::REQUIRED, Attr::MULTIPLE );         # m +
+        $this->create( 'phone', Attr::OPTIONAL, Attr::MULTIPLE )            # m
+            ->apply( [$this, 'validatePhone'] );
+        $this->create( 'fax-no', Attr::OPTIONAL, Attr::MULTIPLE )           # m
+            ->apply( [$this, 'validatePhone'] );
+        $this->create( 'e-mail', Attr::REQUIRED, Attr::MULTIPLE )           # m +
+            ->apply( [$this, 'validateEmail'] );
+        $this->create( 'abuse-mailbox', Attr::REQUIRED, Attr::MULTIPLE )    # m +
+            ->apply( [$this, 'validateEmail'] );
+        $this->create( 'signature', Attr::OPTIONAL, Attr::MULTIPLE );       # m
+        $this->create( 'encryption', Attr::OPTIONAL, Attr::MULTIPLE );      # m
+        $this->create( 'org', Attr::OPTIONAL, Attr::MULTIPLE );             # m
+        $this->create( 'admin-c', Attr::REQUIRED, Attr::MULTIPLE );         # m +
+        $this->create( 'tech-c', Attr::REQUIRED, Attr::MULTIPLE );          # m +
+        $this->create( 'auth', Attr::REQUIRED, Attr::MULTIPLE );            # m +
+        $this->create( 'remarks', Attr::OPTIONAL, Attr::MULTIPLE );         # m
+        $this->create( 'irt-nfy', Attr::OPTIONAL, Attr::MULTIPLE )          # m
+            ->apply( [$this, 'validateEmail'] );
+        $this->create( 'notify', Attr::OPTIONAL, Attr::MULTIPLE );          # m
+        $this->create( 'mnt-by', Attr::REQUIRED, Attr::MULTIPLE );          # m +
+        $this->create( 'changed', Attr::REQUIRED, Attr::MULTIPLE );         # m +
+        $this->create( 'source', Attr::REQUIRED, Attr::SINGLE )             # 1 +
+            ->apply( 'strtoupper' );
     }
 
-    public function phone( $input )
+    public function irt( $input )
     {
-        return $this->validatePhone( $input );
-    }
+        $input = strtoupper( $input );
 
-    public function faxNo( $input )
-    {
-        return $this->validatePhone( $input );
-    }
+        if ( strpos( $input, 'IRT-' ) === 0) {
+            return $input;
+        }
 
-    public function eMail( $input )
-    {
-        return $this->validateEmail( $input );
-    }
-
-    public function abuseMailbox( $input )
-    {
-        return $this->validateEmail( $input );
-    }
-
-    public function irtNfy( $input )
-    {
-        return $this->validateEmail( $input );
+        throw new InvalidValueException( 'Invalid IRT handle' );
     }
 }

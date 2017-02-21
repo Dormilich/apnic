@@ -16,11 +16,13 @@ class AsBlock extends Object
      * @param string $value The range of AS numbers in this block.
      * @return self
      */
-    public function __construct($value)
+    public function __construct( $value )
     {
         $this->init();
-        $this->setType('as-block');
-        $this->setKey('as-block', $value);
+        $this->setType( 'as-block' );
+        $this->setKey( [
+            'as-block' => $value,
+        ] );
     }
 
     /**
@@ -30,16 +32,18 @@ class AsBlock extends Object
      */
     protected function init()
     {
-        $this->create('as-block',  Attr::REQUIRED, Attr::SINGLE);
-        $this->create('descr',     Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('country',   Attr::OPTIONAL, Attr::SINGLE);
-        $this->create('remarks',   Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('tech-c',    Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('admin-c',   Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('notify',    Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('mnt-lower', Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('mnt-by',    Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('changed',   Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('source',    Attr::REQUIRED, Attr::SINGLE)->apply('strtoupper');
+        $this->create( 'as-block', Attr::REQUIRED, Attr::SINGLE );          # 1 +
+        $this->create( 'descr', Attr::OPTIONAL, Attr::MULTIPLE );           # m
+        $this->create( 'remarks', Attr::OPTIONAL, Attr::MULTIPLE );         # m
+        $this->create( 'country', Attr::OPTIONAL, Attr::SINGLE );           # 1
+        $this->create( 'admin-c', Attr::REQUIRED, Attr::MULTIPLE );         # m +
+        $this->create( 'tech-c', Attr::REQUIRED, Attr::MULTIPLE );          # m +
+        $this->create( 'org', Attr::OPTIONAL, Attr::MULTIPLE );             # m
+        $this->create( 'notify', Attr::OPTIONAL, Attr::MULTIPLE );          # m
+        $this->create( 'mnt-by', Attr::REQUIRED, Attr::MULTIPLE );          # m +
+        $this->create( 'mnt-lower', Attr::OPTIONAL, Attr::MULTIPLE );       # m
+        $this->create( 'changed', Attr::REQUIRED, Attr::MULTIPLE );         # m +
+        $this->create( 'source', Attr::REQUIRED, Attr::SINGLE )             # 1 +
+            ->apply( 'strtoupper' );
     }
 }

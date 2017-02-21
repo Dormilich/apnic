@@ -17,11 +17,13 @@ class InetRtr extends Object
      * @param string $value The DNS name.
      * @return self
      */
-    public function __construct($value)
+    public function __construct( $value )
     {
         $this->init();
-        $this->setType('inet-rtr');
-        $this->setKey('inet-rtr', $value);
+        $this->setType( 'inet-rtr' );
+        $this->setKey( [
+            'inet-rtr' => $value,
+        ] );
     }
 
     /**
@@ -31,22 +33,24 @@ class InetRtr extends Object
      */
     protected function init()
     {
-        $this->create('inet-rtr',  Attr::REQUIRED, Attr::SINGLE);
-        $this->create('descr',     Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('alias',     Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('local-as',  Attr::REQUIRED, Attr::SINGLE);
-        $this->create('ifaddr',    Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('interface', Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('peer',      Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('mp-peer',   Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('member-of', Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('remarks',   Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('admin-c',   Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('tech-c',    Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('notify',    Attr::OPTIONAL, Attr::MULTIPLE);
-        $this->create('mnt-by',    Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('changed',   Attr::REQUIRED, Attr::MULTIPLE);
-        $this->create('source',    Attr::REQUIRED, Attr::SINGLE)->apply('strtoupper');
+        $this->create( 'inet-rtr', Attr::REQUIRED, Attr::SINGLE );          # 1 +
+        $this->create( 'descr', Attr::REQUIRED, Attr::MULTIPLE );           # m +
+        $this->create( 'alias', Attr::OPTIONAL, Attr::MULTIPLE );           # m
+        $this->create( 'local-as', Attr::REQUIRED, Attr::SINGLE );          # 1 +
+        $this->create( 'ifaddr', Attr::REQUIRED, Attr::MULTIPLE );          # m +
+        $this->create( 'interface', Attr::OPTIONAL, Attr::MULTIPLE );       # m
+        $this->create( 'peer', Attr::OPTIONAL, Attr::MULTIPLE );            # m
+        $this->create( 'mp-peer', Attr::OPTIONAL, Attr::MULTIPLE );         # m
+        $this->create( 'member-of', Attr::OPTIONAL, Attr::MULTIPLE );       # m
+        $this->create( 'remarks', Attr::OPTIONAL, Attr::MULTIPLE );         # m
+        $this->create( 'org', Attr::OPTIONAL, Attr::MULTIPLE );             # m
+        $this->create( 'admin-c', Attr::REQUIRED, Attr::MULTIPLE );         # m +
+        $this->create( 'tech-c', Attr::REQUIRED, Attr::MULTIPLE );          # m +
+        $this->create( 'notify', Attr::OPTIONAL, Attr::MULTIPLE );          # m
+        $this->create( 'mnt-by', Attr::REQUIRED, Attr::MULTIPLE );          # m +
+        $this->create( 'changed', Attr::REQUIRED, Attr::MULTIPLE );         # m +
+        $this->create( 'source', Attr::REQUIRED, Attr::SINGLE )             # 1 +
+            ->apply( 'strtoupper' );
     }
 
     public function localAs( $input )
