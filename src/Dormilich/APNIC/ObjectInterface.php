@@ -17,7 +17,7 @@ interface ObjectInterface
      * 
      * @return string
      */
-    public function getPrimaryKey();
+    public function getHandle();
 
     /**
      * Get an attribute object specified by name.

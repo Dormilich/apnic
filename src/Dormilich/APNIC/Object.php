@@ -30,25 +30,25 @@ abstract class Object implements ObjectInterface, ArrayAccess, Iterator, Countab
      * The type of the object.
      * @var string
      */
-    private $type = NULL;
+    private $type;
 
     /**
      * The primary lookup key of the object.
-     * @var string
+     * @var string[]
      */
-    private $primaryKey = NULL;
+    private $primaryKey;
 
     /**
      * Name-indexed array of attributes.
-     * @var array 
+     * @var AttributeInterface[] 
      */
     private $attributes = [];
 
     /**
      * Name-indexed array of auto-generated attributes, which should not be set by the user.
-     * @var array 
+     * @var AttributeInterface[] 
      */
-    private $generated  = [];
+    private $generated = [];
 
 // --- OBJECT SETUP ---------------
 
@@ -60,17 +60,19 @@ abstract class Object implements ObjectInterface, ArrayAccess, Iterator, Countab
     abstract protected function init();
 
     /**
-     * Set the name of the primary key.
+     * Set name(s) and value(s) of the primary key.
      * 
-     * @param string $value The name of the primary key.
+     * @param array $keys Key name vs. key value.
      * @return self
-     * @throws LogicException Value is empty
      */
-    protected function setKey( $name, $value )
+    protected function setKey( array $keys )
     {
-        if ( NULL === $this->primaryKey ) {
-            $this->primaryKey = $name;
-            $this->attr( $name )->setValue( $value );
+        if ( count( $keys ) > 0 ) {
+            $this->primaryKey = array_keys( $keys );
+ 
+            foreach ( $keys as $key => $value) {
+                $this->attr( $key )->setValue( $value );
+            }
         }
 
         return $this;
@@ -91,13 +93,10 @@ abstract class Object implements ObjectInterface, ArrayAccess, Iterator, Countab
      * 
      * @param string $name The name of the primary key.
      * @return self
-     * @throws LogicException Value is empty
      */
     protected function setType( $name )
     {
-        if ( NULL === $this->type ) {
-            $this->type = $name;
-        }
+        $this->type = $name;
 
         return $this;
     }
@@ -160,13 +159,26 @@ abstract class Object implements ObjectInterface, ArrayAccess, Iterator, Countab
 // --- DATA ACCESS ----------------
 
     /**
-     * Get the value of the attribute defined as primary key.
+     * Get the value of the attribute(s) defined as primary key.
      * 
      * @return string
      */
-    public function getPrimaryKey()
+    public function getHandle()
     {
-        return $this->attr( $this->primaryKey )->getValue();
+        return array_reduce( $this->primaryKey, function ( $value, $key ) {
+            return $value . $this->attr( $key )->getValue();
+        }, '' );
+    }
+
+    /**
+     * Useful helper in form templates. This needs to be an array since Route / 
+     * Route6 have a composite primary key. 
+     * 
+     * @return string[]
+     */
+    public function getPrimaryKeyNames()
+    {
+        return $this->primaryKey;
     }
 
     /**
@@ -415,7 +427,7 @@ abstract class Object implements ObjectInterface, ArrayAccess, Iterator, Countab
      * @return string
      * @throws InvalidValueException
      */
-    protected function validateEmail( $email )
+    public function validateEmail( $email )
     {
         if ( filter_var( $email, \FILTER_VALIDATE_EMAIL ) ) {
             return $email;
@@ -431,7 +443,7 @@ abstract class Object implements ObjectInterface, ArrayAccess, Iterator, Countab
      * @return string
      * @throws InvalidValueException
      */
-    protected function validatePhone( $phone )
+    public function validatePhone( $phone )
     {
         if ( preg_match( '~^\+[1-9]\d*([ .-]\d+)*( ext\. \d+)?$~', $phone ) ) {
             return $phone;
@@ -441,55 +453,13 @@ abstract class Object implements ObjectInterface, ArrayAccess, Iterator, Countab
     }
 
     /**
-     * Validation function for all attributes that require a Mntner object. 
-     * (And there are a lot of them so I consider this justified)
-     * 
-     * @param mixed $input Handle string or object.
-     * @param string $type The validating attribute’s name.
-     * @return string
-     * @throws InvalidValueException
-     */
-    protected function validateMntner( $input, $type )
-    {
-        if ( $input instanceof RPSL\Mntner ) {
-            return $input->getPrimaryKey();
-        }
-
-        return $this->validateReference( $input, $type, [ 'Mntner' ] );
-    }
-
-    /**
-     * Validate object references. Any valid object must be handled before this 
-     * as at this point only valid strings will pass validation.
-     * 
-     * @param string|object $input Handle string or (invalid) object.
-     * @param string $type The attribute requesting validation.
-     * @param array $allowed The allowed object types.
-     * @return string
-     * @throws InvalidValueException
-     */
-    protected function validateReference( $input, $type, array $allowed )
-    {
-        if ( $input instanceof ObjectInterface ) {
-            $msg = sprintf( 'Only %s objects are allowed as %s', implode( '/', $allowed ), $type );
-            throw new InvalidValueException( $msg );
-        }
-
-        if ( is_string( $input ) ) {
-            return $this->validateHandle( strtoupper( $input ) );
-        }
-
-        throw new InvalidValueException( 'Invalid handle for ' . $type );
-    }
-
-    /**
      * Validation function for RPSL object handles.
      * 
      * @param string $handle 
      * @return string
      * @throws InvalidValueException
      */
-    protected function validateHandle( $handle )
+    public function validateHandle( $handle )
     {
         if ( ! preg_match( '~[^A-Z0-9-]~', $handle ) ) {
             return trim( $handle, '-' );
@@ -531,7 +501,7 @@ abstract class Object implements ObjectInterface, ArrayAccess, Iterator, Countab
     }
 
     /**
-     * Helper callback for the 'changed' attribute. If a valid email is given, 
+     * Helper callback for the `changed` attribute. If a valid email is given, 
      * append the current date. If the input somewhat matches the required 
      * format, pass it on.
      * 
@@ -555,53 +525,40 @@ abstract class Object implements ObjectInterface, ArrayAccess, Iterator, Countab
     }
 
     /**
-     * Helper callback for the 'admin-c' attribute. The input is valid for a 
-     * Person object or an RPSL object handle.
+     * Helper callback for the 'admin-c' attribute. 
      * 
-     * @param string|Person $input 
+     * @param string $input 
      * @return string
      * @throws InvalidValueException
      */
     public function adminC( $input )
     {
-        if ( $input instanceof RPSL\Person ) {
-            return $input->getPrimaryKey();
-        }
-
-        return $this->validateReference( $input, 'admin-c', [ 'Person' ] );
+        return $this->validateHandle( $input );
     }
 
     /**
-     * Helper callback for the 'tech-c' attribute. The input is valid for a 
-     * Person or Role object or an RPSL object handle.
+     * Helper callback for the 'tech-c' attribute. 
      * 
-     * @param string|Person|Role $input 
+     * @param string $input 
      * @return string
      * @throws InvalidValueException
      */
     public function techC( $input )
     {
-        if ( $input instanceof RPSL\Person ) {
-            return $input->getPrimaryKey();
-        }
-        if ( $input instanceof RPSL\Role ) {
-            return $input->getPrimaryKey();
-        }
-
-        return $this->validateReference( $input, 'tech-c', [ 'Person', 'Role' ] );
+        return $this->validateHandle( $input );
     }
 
     /**
      * Helper callback for the 'mnt-by' attribute. The input is valid for a 
      * Mntner object or an RPSL object handle.
      * 
-     * @param string|Mntner $input 
+     * @param string $input 
      * @return string
      * @throws InvalidValueException
      */
     public function mntBy( $input )
     {
-        return $this->validateMntner( $input, 'mnt-by' );
+        return $this->validateHandle( $input );
     }
 
     // there are various other mnt-* and *-c attributes, but they or their 

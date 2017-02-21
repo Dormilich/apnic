@@ -168,19 +168,12 @@ class Attribute implements AttributeInterface, Countable, Iterator, JsonSerializ
      */
     public function addValue( $value )
     {
+        if ( $value instanceof AttributeInterface ) {
+            $value = $value->getValue();
+        }
+
         if ( NULL === $value ) {
             return $this;
-        }
-        // split block text regardless of attribute type 
-        // otherwise the created RPSL block text is likely to be invalid
-        if ( is_string( $value ) and strpos( $value, "\n" ) !== false ) {
-            $value = explode( "\n", $value );
-        }
-        // wrapping the supposedly-single value in an array makes sure that 
-        // only a single iteration is done, even if an iterable is passed
-        if ( ! $this->multiple ) {
-            $this->value = [];
-            $value = [ $value ];
         }
 
         foreach ( $this->loop( $value ) as $v ) {
@@ -191,20 +184,32 @@ class Attribute implements AttributeInterface, Countable, Iterator, JsonSerializ
     }
 
     /**
-     * Prepare a value for use in foreach().
+     * Convert input into an iterable structure. 
+     *  - Block text is converted into an array
+     *  - single valued attributes are reset and the value is wrapped in an array
+     *  - any input left is wrapped in an array
      * 
      * @param mixed $value 
-     * @return array|Traversable
+     * @return array
      */
     protected function loop( $value )
     {
-        if ( is_array( $value ) ) {
-            return $value;
+        // split block text regardless of attribute type 
+        // otherwise the created RPSL block text is likely to be invalid
+        if ( is_string( $value ) and strpos( $value, "\n" ) !== false ) {
+            $value = explode( "\n", $value );
         }
-        if ( $value instanceof Traversable ) {
-            return $value;
+        // wrapping the supposedly-single value in an array makes sure that 
+        // only a single iteration is done, even if an array is passed
+        if ( ! $this->multiple ) {
+            $this->value = [];
+            $value = [ $value ];
         }
-        return [ $value ];
+        elseif ( ! is_array( $value ) ) {
+            $value = [ $value ];
+        }
+
+        return $value;
     }
 
     /**
@@ -215,8 +220,8 @@ class Attribute implements AttributeInterface, Countable, Iterator, JsonSerializ
      */
     protected function convert( $value )
     {
-        $value = $this->run( $value );
         $value = $this->stringify( $value );
+        $value = $this->run( $value );
 
         return rtrim( $value );
     }
@@ -252,7 +257,7 @@ class Attribute implements AttributeInterface, Countable, Iterator, JsonSerializ
             return 'false';
         }
         if ( $value instanceof ObjectInterface ) {
-            return $value->getPrimaryKey();
+            return $value->getHandle();
         }
         if ( is_scalar( $value ) or ( is_object( $value ) and method_exists( $value, '__toString' ) ) ) {
             return (string) $value;
