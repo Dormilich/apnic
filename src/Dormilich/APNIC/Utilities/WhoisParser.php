@@ -77,7 +77,7 @@ class WhoisParser
         $objects = array_filter( $objects, 'is_object' );
 
         $list = array_reduce( $objects, function ( array $list, ObjectInterface $obj ) {
-            $list[ $obj->getPrimaryKey() ] = $obj;
+            $list[ $obj->getHandle() ] = $obj;
             return $list;
         }, [] );
 

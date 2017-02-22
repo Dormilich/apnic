@@ -70,7 +70,7 @@ class Inet6num extends Object
             $length = filter_var( $length, \FILTER_VALIDATE_INT, 
                 [ 'options' => [ 'min_range' => 0, 'max_range' => 128 ] ] );
 
-            if ( $ip and is_int( $length ) ) {
+            if ( $ip and false !== $length ) {
                 return $input;
             }
         }

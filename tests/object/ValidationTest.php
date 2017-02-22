@@ -105,6 +105,24 @@ class ValidationTest extends TestCase
         $obj['fax-no'] = '123 75319';
     }
 
+    public function testHandleValidator()
+    {
+        $obj = new Object('foo');
+        $obj['mnt-by'] = 'phpunit-AP';
+
+        $this->assertEquals(['PHPUNIT-AP'], $obj['mnt-by']);
+    }
+
+    /**
+     * @expectedException \Dormilich\APNIC\Exceptions\InvalidValueException
+     * @expectedExceptionMessage Invalid RPSL object handle
+     */
+    public function testHandleValidatorFailsForInvalidString()
+    {
+        $obj = new Object('foo');
+        $obj['mnt-by'] = '127.0.0.1';
+    }
+
     public function testObjectValidity()
     {
         $obj = new Object('foo');
@@ -113,6 +131,7 @@ class ValidationTest extends TestCase
 
         $obj['changed'] = 'test@example.com';
         $obj['source']  = 'APNIC';
+        $obj['mnt-by']  = 'PHPUNIT-AP';
 
         $this->assertTrue($obj->isValid());
     }

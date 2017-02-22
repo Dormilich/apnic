@@ -8,35 +8,26 @@ class RpslTest extends TestCase
 {
     public function testAsBlock()
     {
-        $obj = new RPSL\AsBlock('test');
-        $names = [
-            'as-block', 'descr', 'country', 'remarks', 'tech-c', 'admin-c', 
-            'notify', 'mnt-lower', 'mnt-by', 'changed', 'source', 
-        ];
-        $this->assertEquals($names, $obj->getAttributeNames());
+        $obj = new RPSL\AsBlock('phpunit');
+
+        $this->assertSame('as-block', $obj->getType());
+        $this->assertEquals(['as-block'], $obj->getPrimaryKeyNames());
     }
 
     public function testAsSet()
     {
-        $obj = new RPSL\AsSet('test');
-        $names = [
-            'as-set', 'descr', 'country', 'members', 'mbrs-by-ref', 
-            'remarks', 'tech-c', 'admin-c', 'notify', 'mnt-by', 
-            'mnt-lower', 'changed', 'source', 
-        ];
-        $this->assertEquals($names, $obj->getAttributeNames());
+        $obj = new RPSL\AsSet('phpunit');
+
+        $this->assertSame('as-set', $obj->getType());
+        $this->assertEquals(['as-set'], $obj->getPrimaryKeyNames());
     }
 
     public function testAutNum()
     {
         $obj = new RPSL\AutNum('AS135');
-        $names = [
-            'aut-num', 'as-name', 'descr', 'country', 'member-of', 
-            'import', 'export', 'default', 'remarks', 'admin-c', 
-            'tech-c', 'notify', 'mnt-lower', 'mnt-routes', 'mnt-by', 
-            'mnt-irt', 'changed', 'source', 
-        ];
-        $this->assertEquals($names, $obj->getAttributeNames());
+
+        $this->assertSame('aut-num', $obj->getType());
+        $this->assertEquals(['aut-num'], $obj->getPrimaryKeyNames());
     }
 
     /**
@@ -51,18 +42,17 @@ class RpslTest extends TestCase
     public function testIPv4Domain()
     {
         $obj = new RPSL\Domain('0.0.127.in-addr.arpa');
-        $names = [
-            'domain', 'descr', 'country', 'admin-c', 'tech-c', 
-            'zone-c', 'nserver', 'remarks', 'notify', 'mnt-by', 
-            'mnt-lower', 'changed', 'source', 
-        ];
-        $this->assertEquals($names, $obj->getAttributeNames());
+
+        $this->assertSame('domain', $obj->getType());
+        $this->assertEquals(['domain'], $obj->getPrimaryKeyNames());
     }
 
     public function testIPv6Domain()
     {
         $obj = new RPSL\Domain('0DB8.2001.ip6.arpa');
-        $this->assertSame('0DB8.2001.ip6.arpa', $obj->getPrimaryKey());
+
+        $this->assertSame('domain', $obj->getType());
+        $this->assertEquals(['domain'], $obj->getPrimaryKeyNames());
     }
 
     /**
@@ -77,11 +67,9 @@ class RpslTest extends TestCase
     public function testFilterSet()
     {
         $obj = new RPSL\FilterSet('FLTR-EXAMPLENET');
-        $names = [
-            'filter-set', 'descr', 'filter', 'mp-filter', 'remarks', 'tech-c', 
-            'admin-c', 'notify', 'mnt-by', 'mnt-lower', 'changed', 'source', 
-        ];
-        $this->assertEquals($names, $obj->getAttributeNames());
+
+        $this->assertSame('filter-set', $obj->getType());
+        $this->assertEquals(['filter-set'], $obj->getPrimaryKeyNames());
     }
 
     /**
@@ -96,15 +84,10 @@ class RpslTest extends TestCase
     public function testInet6num()
     {
         $obj = new RPSL\Inet6num('2001:0DB8::/32');
-        $names = [
-            'inet6num', 'netname', 'descr', 'country', 'geoloc', 
-            'language', 'admin-c', 'tech-c', 'status', 'remarks', 
-            'notify', 'mnt-by', 'mnt-lower', 'mnt-routes', 'mnt-irt', 
-            'changed', 'source', 
-        ];
-        $this->assertEquals($names, $obj->getAttributeNames());
-
         $obj['status'] = 'assigned portable';
+
+        $this->assertSame('inet6num', $obj->getType());
+        $this->assertEquals(['inet6num'], $obj->getPrimaryKeyNames());
         $this->assertSame('ASSIGNED PORTABLE', $obj['status']);
     }
 
@@ -142,34 +125,25 @@ class RpslTest extends TestCase
     public function testInetnum()
     {
         $obj = new RPSL\Inetnum('192.168.1.0 - 192.168.1.255');
-        $names = [
-            'inetnum', 'netname', 'descr', 'country', 'geoloc', 
-            'language', 'admin-c', 'tech-c', 'status', 'remarks', 
-            'notify', 'mnt-by', 'mnt-lower', 'mnt-routes', 'mnt-domains', 
-            'mnt-irt', 'changed', 'source', 
-        ];
-        $this->assertEquals($names, $obj->getAttributeNames());
-
         $obj['status'] = 'assigned non-portable';
+
+        $this->assertSame('inetnum', $obj->getType());
+        $this->assertEquals(['inetnum'], $obj->getPrimaryKeyNames());
         $this->assertSame('ASSIGNED NON-PORTABLE', $obj['status']);
     }
 
     public function testInetnumSetups()
     {
         $obj1 = new RPSL\Inetnum('192.168.1.0-192.168.1.255');
-        $this->assertSame('192.168.1.0 - 192.168.1.255', $obj1->getPrimaryKey());
+        $this->assertSame('192.168.1.0 - 192.168.1.255', $obj1->getHandle());
 
-        $obj2 = new RPSL\Inetnum('192.168.1.0', '192.168.1.255');
-        $this->assertSame('192.168.1.0 - 192.168.1.255', $obj2->getPrimaryKey());
-
-        $obj3 = new RPSL\Inetnum('192.168.1.0/24');
-        $this->assertSame('192.168.1.0 - 192.168.1.255', $obj3->getPrimaryKey());
+        $obj2 = new RPSL\Inetnum('192.168.1.0/24');
+        $this->assertSame('192.168.1.0 - 192.168.1.255', $obj2->getHandle());
     }
 
-    public function invalidIP4Addresses()
+    public function invalidIP4Cidr()
     {
         return [
-            ['test'],
             ['2001:0DB8::/32'],
             ['192.168.1.0/64'],
             ['192.168.312.0/20'],
@@ -178,13 +152,13 @@ class RpslTest extends TestCase
     }
 
     /**
-     * @dataProvider invalidIP4Addresses
+     * @dataProvider invalidIP4Cidr
      * @expectedException \Dormilich\APNIC\Exceptions\InvalidValueException
-     * @expectedExceptionMessage Invalid IPv4 address range
+     * @expectedExceptionMessage Invalid IPv4 CIDR
      */
-    public function testInetnumWithInvalidAddressFails($address)
+    public function testInetnumWithInvalidAddressFails($cidr)
     {
-        new RPSL\Inetnum($address);
+        new RPSL\Inetnum($cidr);
     }
 
     /**
@@ -193,7 +167,7 @@ class RpslTest extends TestCase
      */
     public function testInetnumWithInvalidIPsFails()
     {
-        new RPSL\Inetnum('192.168.1.0', '24');
+        new RPSL\Inetnum('test');
     }
 
     /**
@@ -209,15 +183,10 @@ class RpslTest extends TestCase
     public function testInetRtr()
     {
         $obj = new RPSL\InetRtr('test');
-        $names = [
-            'inet-rtr', 'descr', 'alias', 'local-as', 'ifaddr', 
-            'interface', 'peer', 'mp-peer', 'member-of', 'remarks', 
-            'admin-c', 'tech-c', 'notify', 'mnt-by', 'changed', 'source', 
-        ];
-        $this->assertEquals($names, $obj->getAttributeNames());
-
         $obj['local-as'] = 'AS135';
-        $this->assertSame('AS135', $obj['local-as']);
+
+        $this->assertSame('inet-rtr', $obj->getType());
+        $this->assertEquals(['inet-rtr'], $obj->getPrimaryKeyNames());
     }
 
     /**
@@ -232,40 +201,18 @@ class RpslTest extends TestCase
 
     public function testIrt()
     {
-        $obj = new RPSL\Irt('test');
-        $names = [
-            'irt', 'address', 'phone', 'fax-no', 'e-mail', 'abuse-mailbox', 
-            'signature', 'encryption', 'admin-c', 'tech-c', 'auth', 
-            'remarks', 'irt-nfy', 'notify', 'mnt-by', 'changed', 'source', 
-        ];
-        $this->assertEquals($names, $obj->getAttributeNames());
+        $obj = new RPSL\Irt('IRT-PHPUNIT');
 
-        // phone & email validation failure is covered in ValidationTest.php
-
-        $obj['phone'] = '+12 34 567890 010';
-        $this->assertEquals(['+12 34 567890 010'], $obj['phone']);
-
-        $obj['fax-no'] = '+12 34 567890 010';
-        $this->assertEquals(['+12 34 567890 010'], $obj['fax-no']);
-
-        $obj['e-mail'] = 'test@example.com';
-        $this->assertEquals(['test@example.com'], $obj['e-mail']);
-
-        $obj['abuse-mailbox'] = 'test@example.com';
-        $this->assertEquals(['test@example.com'], $obj['abuse-mailbox']);
-
-        $obj['irt-nfy'] = 'test@example.com';
-        $this->assertEquals(['test@example.com'], $obj['irt-nfy']);
+        $this->assertSame('irt', $obj->getType());
+        $this->assertEquals(['irt'], $obj->getPrimaryKeyNames());
     }
 
     public function testKeyCert()
     {
         $obj = new RPSL\KeyCert('PGPKEY-83F2A90E');
-        $names = [
-            'key-cert', 'certif', 'remarks', 'notify', 'admin-c', 'tech-c', 
-            'mnt-by', 'changed', 'source', 'method', 'owner', 'fingerpr', 
-        ];
-        $this->assertEquals($names, $obj->getAttributeNames());
+
+        $this->assertSame('key-cert', $obj->getType());
+        $this->assertEquals(['key-cert'], $obj->getPrimaryKeyNames());
     }
 
     /**
@@ -279,37 +226,26 @@ class RpslTest extends TestCase
 
     public function testMntner()
     {
-        $obj = new RPSL\Mntner('MAINT-EU-test');
-        $names = [
-            'mntner', 'descr', 'country', 'admin-c', 'tech-c', 
-            'upd-to', 'mnt-nfy', 'auth', 'remarks', 'notify', 
-            'abuse-mailbox', 'mnt-by', 'referral-by', 'changed', 'source', 
-        ];
-        $this->assertEquals($names, $obj->getAttributeNames());
-        $this->assertSame('MAINT-EU-TEST', $obj->getPrimaryKey());
+        $obj = new RPSL\Mntner('MAINT-PHPUNIT');
 
-        // email validation failure is covered in ValidationTest.php
+        $this->assertSame('mntner', $obj->getType());
+        $this->assertEquals(['mntner'], $obj->getPrimaryKeyNames());
+    }
 
-        $obj['upd-to'] = 'test@example.com';
-        $this->assertEquals(['test@example.com'], $obj['upd-to']);
+    public function testOrganisation()
+    {
+        $obj = new RPSL\Organisation('ORG-PHPUNIT');
 
-        $obj['abuse-mailbox'] = 'test@example.com';
-        $this->assertEquals(['test@example.com'], $obj['abuse-mailbox']);
-
-        $obj['mnt-nfy'] = 'test@example.com';
-        $this->assertEquals(['test@example.com'], $obj['mnt-nfy']);
+        $this->assertSame('organisation', $obj->getType());
+        $this->assertEquals(['organisation'], $obj->getPrimaryKeyNames());
     }
 
     public function testPeeringSet()
     {
         $obj = new RPSL\PeeringSet('PRNG-examplenet');
-        $names = [
-            'peering-set', 'descr', 'peering', 'mp-peering', 
-            'remarks', 'tech-c', 'admin-c', 'notify', 'mnt-by', 
-            'mnt-lower', 'changed', 'source', 
-        ];
-        $this->assertEquals($names, $obj->getAttributeNames());
-        $this->assertSame('PRNG-EXAMPLENET', $obj->getPrimaryKey());
+
+        $this->assertSame('peering-set', $obj->getType());
+        $this->assertEquals(['peering-set'], $obj->getPrimaryKeyNames());
     }
 
     public function testPeeringSetValidity()
@@ -347,78 +283,87 @@ class RpslTest extends TestCase
 
     public function testPerson()
     {
-        $obj = new RPSL\Person('John Doe');
-        $names = [
-            'person', 'address', 'country', 'phone', 'fax-no', 
-            'e-mail', 'nic-hdl', 'remarks', 'notify', 
-            'abuse-mailbox', 'mnt-by', 'changed', 'source', 
-        ];
-        $this->assertEquals($names, $obj->getAttributeNames());
+        $obj = new RPSL\Person('PHPUNIT-AP');
 
-        // phone & email validation failure is covered in ValidationTest.php
+        $this->assertSame('person', $obj->getType());
+        $this->assertEquals(['nic-hdl'], $obj->getPrimaryKeyNames());
+    }
 
-        $obj['phone'] = '+12 34 567890 010';
-        $this->assertEquals(['+12 34 567890 010'], $obj['phone']);
+    public function testPoem()
+    {
+        $obj = new RPSL\Poem('Once more with Feeling');
+        $obj['form'] = 'form-limerick';
 
-        $obj['fax-no'] = '+12 34 567890 010';
-        $this->assertEquals(['+12 34 567890 010'], $obj['fax-no']);
+        $this->assertSame('poem', $obj->getType());
+        $this->assertEquals(['poem'], $obj->getPrimaryKeyNames());
+    }
 
-        $obj['e-mail'] = 'test@example.com';
-        $this->assertEquals(['test@example.com'], $obj['e-mail']);
+    /**
+     * @expectedException \Dormilich\APNIC\Exceptions\InvalidValueException
+     * @expectedExceptionMessage Invalid poetic-form handle
+     */
+    public function testPoemWithInvalidFormFails()
+    {
+        $obj = new RPSL\Poem('test');
+        $obj['form'] = 'limerick';
+    }
 
-        $obj['abuse-mailbox'] = 'test@example.com';
-        $this->assertEquals(['test@example.com'], $obj['abuse-mailbox']);
+    public function testPoeticForm()
+    {
+        $obj = new RPSL\PoeticForm('FORM-HAIKU');
+
+        $this->assertSame('poetic-form', $obj->getType());
+        $this->assertEquals(['poetic-form'], $obj->getPrimaryKeyNames());
+    }
+
+    /**
+     * @expectedException \Dormilich\APNIC\Exceptions\InvalidValueException
+     * @expectedExceptionMessage Invalid poetic-form handle
+     */
+    public function testPoeticFormWithInvalidKeyFails()
+    {
+        new RPSL\PoeticForm('test');
     }
 
     public function testRole()
     {
-        $obj = new RPSL\Role('Abuse');
-        $names = [
-            'role', 'address', 'country', 'phone', 'fax-no', 
-            'e-mail', 'admin-c', 'tech-c', 'nic-hdl', 'remarks', 
-            'notify', 'abuse-mailbox', 'mnt-by', 'changed', 'source', 
-        ];
-        $this->assertEquals($names, $obj->getAttributeNames());
+        $obj = new RPSL\Role('PHPUNIT-AP');
 
-        // phone & email validation failure is covered in ValidationTest.php
-
-        $obj['phone'] = '+12 34 567890 010';
-        $this->assertEquals(['+12 34 567890 010'], $obj['phone']);
-
-        $obj['fax-no'] = '+12 34 567890 010';
-        $this->assertEquals(['+12 34 567890 010'], $obj['fax-no']);
-
-        $obj['e-mail'] = 'test@example.com';
-        $this->assertEquals(['test@example.com'], $obj['e-mail']);
-
-        $obj['abuse-mailbox'] = 'test@example.com';
-        $this->assertEquals(['test@example.com'], $obj['abuse-mailbox']);
+        $this->assertSame('role', $obj->getType());
+        $this->assertEquals(['nic-hdl'], $obj->getPrimaryKeyNames());
     }
 
-    public function testRoute()
+    public function routeKeyProvider()
     {
-        $obj = new RPSL\Route('192.168.1.0/24');
-        $names = [
-            'route', 'descr', 'country', 'origin', 'holes', 
-            'member-of', 'inject', 'aggr-mtd', 'aggr-bndry', 
-            'export-comps', 'components', 'remarks', 'notify', 
-            'mnt-lower', 'mnt-routes', 'mnt-by', 'changed', 'source', 
+        return [
+            ['192.168.1.0/24AS135'],
+            ['192.168.1.0/24 AS135'],
+            ['AS135 192.168.1.0/24'],
         ];
-        $this->assertEquals($names, $obj->getAttributeNames());
-
-        $this->assertNull($obj->getPrimaryKey());
-
-        $obj['origin'] = 'AS135';
-        $this->assertSame('AS135', $obj['origin']);
-
-        $this->assertSame('192.168.1.0/24AS135', $obj->getPrimaryKey());
     }
 
-    public function testRouteWithCompositeKey()
+    /**
+     * @dataProvider routeKeyProvider
+     */
+    public function testRoute($key)
     {
-        $obj = new RPSL\Route('192.168.1.0/24AS135');
+        $obj = new RPSL\Route($key);
+
+        $this->assertSame('route', $obj->getType());
+        $this->assertEquals(['route', 'origin'], $obj->getPrimaryKeyNames());
+        $this->assertSame('192.168.1.0/24AS135', $obj->getHandle());
         $this->assertSame('192.168.1.0/24', $obj['route']);
         $this->assertSame('AS135', $obj['origin']);
+    }
+
+    // Route / Route6 are the only objects with a composite key
+    // so passed objects must be treated in the object, rather than the attribute
+    public function testSetUpRouteWithRouteInstance()
+    {
+        $src = new RPSL\Route('192.168.1.0/24 AS135');
+        $obj = new RPSL\Route($src);
+
+        $this->assertSame($src->getHandle(), $obj->getHandle());
     }
 
     /**
@@ -427,7 +372,7 @@ class RpslTest extends TestCase
      */
     public function testRouteWithInvalidAddressFails()
     {
-        new RPSL\Route('2001:0DB8::/32');
+        new RPSL\Route('2001:0DB8::/32AS135');
     }
 
     /**
@@ -436,7 +381,7 @@ class RpslTest extends TestCase
      */
     public function testRouteWithInvalidIPv4CidrFails()
     {
-        new RPSL\Route('192.168.1.0/44'); // prefix length too large
+        new RPSL\Route('192.168.1.0/44AS135'); // prefix length too large
     }
 
     /**
@@ -445,42 +390,50 @@ class RpslTest extends TestCase
      */
     public function testRouteWithInvalidAsnFails()
     {
-        $obj = new RPSL\Route('192.168.1.0/24');
+        $obj = new RPSL\Route('192.168.1.0/24ASN');
+    }
+
+    /**
+     * @expectedException \Dormilich\APNIC\Exceptions\InvalidValueException
+     * @expectedExceptionMessage Invalid AS number
+     */
+    public function testEditRouteWithInvalidOriginFails()
+    {
+        $obj = new RPSL\Route('192.168.1.0/24AS135');
         $obj['origin'] = 'ASN';
     }
 
-    public function testRoute6()
+    public function route6KeyProvider()
     {
-        $obj = new RPSL\Route6('2001:0DB8::/64');
-        $names = [
-            'route6', 'descr', 'country', 'origin', 'holes', 
-            'member-of', 'inject', 'aggr-mtd', 'aggr-bndry', 
-            'export-comps', 'components', 'remarks', 'notify', 
-            'mnt-lower', 'mnt-routes', 'mnt-by', 'changed', 'source', 
+        return [
+            ['2001:0DB8::/64AS135'],
+            ['2001:0DB8::/64 AS135'],
+            ['AS135 2001:0DB8::/64'],
         ];
-        $this->assertEquals($names, $obj->getAttributeNames());
-
-        $this->assertNull($obj->getPrimaryKey());
-
-        $obj['origin'] = 'AS135';
-        $this->assertSame('AS135', $obj['origin']);
-
-        $this->assertSame('2001:0DB8::/64AS135', $obj->getPrimaryKey());
     }
 
-    public function testRoute6WithCompositeKey()
+    /**
+     * @dataProvider route6KeyProvider
+     */
+    public function testRoute6($key)
     {
-        $obj = new RPSL\Route6('2001:0DB8::/48AS135');
-        $this->assertSame('2001:0DB8::/48', $obj['route6']);
+        $obj = new RPSL\Route6($key);
+
+        $this->assertSame('route6', $obj->getType());
+        $this->assertEquals(['route6', 'origin'], $obj->getPrimaryKeyNames());
+        $this->assertSame('2001:0DB8::/64AS135', $obj->getHandle());
+        $this->assertSame('2001:0DB8::/64', $obj['route6']);
         $this->assertSame('AS135', $obj['origin']);
     }
 
-    public function testRoute6WithInet6num()
+    // Route / Route6 are the only objects with a composite key
+    // so passed objects must be treated in the object, rather than the attribute
+    public function testSetUpRoute6WithRouteInstance()
     {
-        $net = new RPSL\Inet6num('2001:0DB8::/48');
-        $obj = new RPSL\Route6($net);
-        $this->assertSame('2001:0DB8::/48', $obj['route6']);
-        $this->assertNull($obj->getPrimaryKey());
+        $src = new RPSL\Route6('2001:0DB8::/64 AS135');
+        $obj = new RPSL\Route6($src);
+
+        $this->assertSame($src->getHandle(), $obj->getHandle());
     }
 
     /**
@@ -489,7 +442,7 @@ class RpslTest extends TestCase
      */
     public function testRoute6WithInvalidAddressFails()
     {
-        new RPSL\Route6('abcx:759/24');
+        new RPSL\Route6('abcx:759/24AS135');
     }
 
     /**
@@ -498,29 +451,32 @@ class RpslTest extends TestCase
      */
     public function testRoute6WithInvalidAsnFails()
     {
-        $obj = new RPSL\Route6('2001:0DB8::/32');
+        $obj = new RPSL\Route6('2001:0DB8::/32ASN');
+    }
+
+    /**
+     * @expectedException \Dormilich\APNIC\Exceptions\InvalidValueException
+     * @expectedExceptionMessage Invalid AS number
+     */
+    public function testEditRoute6WithInvalidOriginFails()
+    {
+        $obj = new RPSL\Route6('2001:0DB8::/32AS135');
         $obj['origin'] = 'ASN';
     }
 
     public function testRouteSet()
     {
         $obj = new RPSL\RouteSet('test');
-        $names = [
-            'route-set', 'descr', 'members', 'mp-members', 
-            'mbrs-by-ref', 'remarks', 'tech-c', 'admin-c', 
-            'notify', 'mnt-by', 'mnt-lower', 'changed', 'source', 
-        ];
-        $this->assertEquals($names, $obj->getAttributeNames());
+
+        $this->assertSame('route-set', $obj->getType());
+        $this->assertEquals(['route-set'], $obj->getPrimaryKeyNames());
     }
 
     public function testRtrSet()
     {
         $obj = new RPSL\RtrSet('test');
-        $names = [
-            'rtr-set', 'descr', 'members', 'mp-members', 
-            'mbrs-by-ref', 'remarks', 'tech-c', 'admin-c', 
-            'notify', 'mnt-by', 'mnt-lower', 'changed', 'source', 
-        ];
-        $this->assertEquals($names, $obj->getAttributeNames());
+
+        $this->assertSame('rtr-set', $obj->getType());
+        $this->assertEquals(['rtr-set'], $obj->getPrimaryKeyNames());
     }
 }

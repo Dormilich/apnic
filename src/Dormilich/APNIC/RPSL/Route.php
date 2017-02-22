@@ -40,16 +40,16 @@ class Route extends Object
 
         $pk = [ 'route' => NULL, 'origin' => NULL ];
 
-        if ( preg_match( '/AS\d+/', $value, $match ) === 1 ) {
-            $pk[ 'origin' ] = $match[ 0 ];
-            $value = str_replace( $match[ 0 ], '', $value );
+        if ( ! preg_match( '/AS\d+/', $value, $match ) ) {
+            throw new InvalidValueException( 'Invalid AS number' );
         }
+
+        $pk[ 'origin' ] = $match[ 0 ];
+        $value = str_replace( $match[ 0 ], '', $value );
 
         $pk[ 'route' ] = trim( $value );
 
-        if ( isset( $pk[ 'route' ], $pk[ 'origin' ] ) ) {
-            $this->setKey( $pk );
-        }
+        $this->setKey( $pk );
     }
 
     /**

@@ -23,19 +23,17 @@ class Inetnum extends Object
      * 
      * Supported input formats:
      *  - IP range string (IP address - space - hyphen - space - IP address)
-     *  - IP address & IP address
      *  - CIDR
      * 
-     * @param mixed $start IP range, CIDR, or IP address.
-     * @param mixed $end IP address.
+     * @param mixed $value IP range or CIDR.
      * @return self
      */
-    public function __construct( $start, $end = null )
+    public function __construct( $value )
     {
         $this->init();
         $this->setType( 'inetnum' );
         $this->setKey( [
-            'inetnum' => $this->getIPRange( $start, $end ),
+            'inetnum' => $value,
         ] );
     }
 
@@ -69,6 +67,10 @@ class Inetnum extends Object
 
     public function inetnum( $input )
     {
+       if ( strpos( $input, '/' ) !== false )  {
+            $input = $this->fromCIDR( $input );
+        }
+
         $ip = explode( '-', $input );
         $ip = array_map( 'trim', $ip );
         $ip = array_filter( $ip, function ( $addr ) {
@@ -94,77 +96,43 @@ class Inetnum extends Object
     }
 
     /**
-     * Convert the various input formats to an IP range string. If the input 
-     * fails any validation, the address parameter is returned unchanged and 
-     * likely to fail in the final validation.
+     * Convert a CIDR into an IP range. 
      * 
-     * @param mixed $address IP range, CIDR, or IP address.
-     * @param mixed $end IP address.
-     * @return string IP range string or the unchanged input.
-     */
-    private function getIPRange( $address, $end )
-    {
-        // check for range
-        if ( strpos( $address, '-' ) !== false ) {
-            return $address;
-        }
-        // check for CIDR
-        if ( strpos( $address, '/' ) !== false )  {
-            return $this->fromCIDR( $address );
-        }
-        // try input as IP
-        if ( $end ) {
-            return $this->fromIPs( $address, $end );
-        }
-
-        return $address;
-    }
-
-    /**
-     * Convert a CIDR into an IP range. Returns the input if it is invalid or 
-     * the end IP would exceed the IPv4 range.
-     * 
-     * @param string $address CIDR.
+     * @param string $cidr CIDR.
      * @return string IP range or original input.
+     * @throws InvalidValueException Not an IPv4 CIDR.
      */
-    private function fromCIDR( $address )
+    private function fromCIDR( $cidr )
     {
-        list( $ip, $prefix ) = explode( '/', $address, 2 );
+        list( $ip, $prefix ) = explode( '/', $cidr, 2 );
 
         $ip = filter_var( $ip, \FILTER_VALIDATE_IP, \FILTER_FLAG_IPV4 );
         $prefix = filter_var( $prefix, \FILTER_VALIDATE_INT, 
             [ 'options' => [ 'min_range' => 0, 'max_range' => 32 ] ] );
 
-        if ( false === $ip or false === $prefix) {
-            return $address;
+        if ( false !== $ip and false !== $prefix) {
+            return $this->ipRangeFromCidr( $ip, $prefix );
         }
 
-        $netsize = 1 << ( 32 - $prefix );
+        throw new InvalidValueException( 'Invalid IPv4 CIDR' );
+    }
+
+    /**
+     * Convert the CIDR parts into an IP range. 
+     * 
+     * @param string $cidr CIDR.
+     * @return string IP range or original input.
+     * @throws InvalidValueException End IP by prefix length exceeds IPv4 space.
+     */
+    private function ipRangeFromCidr( $ip, $prefixLength )
+    {
+        $netsize = 1 << ( 32 - $prefixLength );
         $end_num = ip2long( $ip ) + $netsize - 1;
         
         if ( $end_num < ( 1 << 32 ) ) {
             return $ip . ' - ' . long2ip( $end_num );
         }
 
-        return $address;
-    }
-
-    /**
-     * Validate both input parameters as IPs.
-     * 
-     * @param string $address Start IP address.
-     * @param string $end End IP address.
-     * @return string A valid handle or the first parameter.
-     */
-    private function fromIPs( $address, $end )
-    {
-        $start = filter_var( $address, \FILTER_VALIDATE_IP, \FILTER_FLAG_IPV4 );
-        $end = filter_var( $end, \FILTER_VALIDATE_IP, \FILTER_FLAG_IPV4 );
-
-        if ( $start and $end ) {
-            return $start . ' - ' . $end;
-        }
-
-        return $address;
+        throw new InvalidValueException( 'Invalid IPv4 CIDR' );
     }
 }

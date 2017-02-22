@@ -55,24 +55,4 @@ class Role extends Object
         $this->create( 'source', Attr::REQUIRED, Attr::SINGLE )             # 1 +
             ->apply( 'strtoupper' );
     }
-
-    public function phone( $input )
-    {
-        return $this->validatePhone( $input );
-    }
-
-    public function faxNo( $input )
-    {
-        return $this->validatePhone( $input );
-    }
-
-    public function eMail( $input )
-    {
-        return $this->validateEmail( $input );
-    }
-
-    public function abuseMailbox( $input )
-    {
-        return $this->validateEmail( $input );
-    }
 }

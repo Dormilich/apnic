@@ -125,7 +125,7 @@ try {
     ;
     $body = $john . 'password: ' . $my_apnic_password;
     // please use a proper email client!
-    mail('auto-dbm@apnic.net', $john->getPrimaryKey(), $body, ...);
+    mail('auto-dbm@apnic.net', $john->getHandle(), $body, ...);
   }
 }
 catch (Exception $e) {

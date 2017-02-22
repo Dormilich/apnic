@@ -32,7 +32,7 @@ class WhoisParserTest extends TestCase
         $obj = $parser->parse( $text );
 
         $this->assertInstanceOf( Mntner::class, $obj );
-        $this->assertSame( 'MAINT-EXAMPLE-HK', $obj->getPrimaryKey() );
+        $this->assertSame( 'MAINT-EXAMPLE-HK', $obj->getHandle() );
 
         $this->assertSame( 'MAINT-EXAMPLE-HK', $obj[ 'mntner' ] );
         $this->assertEquals( ['Example, Ltd. (HK)'], $obj[ 'descr' ] );
@@ -59,7 +59,7 @@ class WhoisParserTest extends TestCase
         $obj = $parser->parse( $text, $mnt );
 
         $this->assertInstanceOf( Mntner::class, $obj );
-        $this->assertSame( 'MAINT-EXAMPLE-HK', $obj->getPrimaryKey() );
+        $this->assertSame( 'MAINT-EXAMPLE-HK', $obj->getHandle() );
     }
 
     /**

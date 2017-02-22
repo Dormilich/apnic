@@ -63,21 +63,22 @@ class AttributeTest extends TestCase
     public function testAttributeConvertsInputToStrings()
     {
         $attr = new Attribute('foo', Attr::REQUIRED, Attr::SINGLE);
-
+        // integer
         $attr->setValue(1);
         $this->assertSame('1', $attr->getValue());
-
+        // float
         $attr->setValue(2.718);
         $this->assertSame('2.718', $attr->getValue());
-
+        // string
         $attr->setValue('bar');
         $this->assertSame('bar', $attr->getValue());
-
-        $test = new Test\StringObject;
+        // stringifiable object
+        $test = $this->createMock('Exception');
+        $test->method('__toString')->willReturn('test');
         $attr->setValue($test);
         $this->assertSame('test', $attr->getValue());
-
-        // I am not aware that the RIPE DB uses booleans somewhere…
+        // boolean
+        // I am not aware that the DB uses booleans somewhere…
         $attr->setValue(true);
         $this->assertSame('true', $attr->getValue());
 
@@ -146,10 +147,10 @@ class AttributeTest extends TestCase
     public function testAttributeAllowsRpslObject()
     {
         $attr = new Attribute('foo', Attr::REQUIRED, Attr::SINGLE);
-        $obj = new BaseObject('phpunit');
+        $obj = new BaseObject(uniqid());
 
         $attr->setValue($obj);
-        $this->assertSame('phpunit', $attr->getValue());
+        $this->assertSame($obj->getHandle(), $attr->getValue());
     }
 
     /**
@@ -180,12 +181,13 @@ class AttributeTest extends TestCase
         $this->assertSame(['fizz', 'buzz'], $attr->getValue());
     }
 
-    public function testMultipleAttributeAllowsIterator()
+    public function testMultipleAttributeAllowsAttribute()
     {
         $attr = new Attribute('foo', Attr::REQUIRED, Attr::MULTIPLE);
-        $iter = new \ArrayIterator(['fizz', 'buzz']);
+        $src = new Attribute('bar', Attr::REQUIRED, Attr::MULTIPLE);
+        $src->setValue(['fizz', 'buzz']);
 
-        $attr->setValue($iter);
+        $attr->setValue($src);
         $this->assertSame(['fizz', 'buzz'], $attr->getValue());
     }
 
@@ -263,18 +265,21 @@ TXT;
         $this->assertSame('X', $attr->getValue());
     }
 
-    public function testValidatorReceivesOriginalInput()
+    public function testValidatorReceivesStringInput()
     {
-        $test = new Test\StringObject;
+        $obj = $this->createMock('Exception');
+        $obj->method('__toString')->willReturn('phpunit');
+
         $attr = new Attribute('test', Attr::REQUIRED, Attr::SINGLE);
 
         $attr->apply(function ($input) {
-            $this->assertInternalType('object', $input);
+            $this->assertInternalType('string', $input);
             return strtoupper($input);
         });
-        $attr->setValue($test);
 
-        $this->assertSame('TEST', $attr->getValue());
+        $attr->setValue($obj);
+
+        $this->assertSame('PHPUNIT', $attr->getValue());
     }
 
     public function testValidatorCannotBeRedefined()
@@ -313,18 +318,6 @@ TXT;
 
         $attr->addValue(2);
         $this->assertCount(2, $attr);
-    }
-
-    public function testArrayConversion()
-    {
-        $attr = new Attribute('test', Attr::REQUIRED, Attr::MULTIPLE);
-        $attr->setValue(['fizz', 'buzz']);
-
-        $expected = [
-            ['name' => 'test', 'value' => 'fizz'],
-            ['name' => 'test', 'value' => 'buzz'],
-        ];
-        $this->assertEquals($expected, $attr->toArray());
     }
 
     public function testJsonConversion()

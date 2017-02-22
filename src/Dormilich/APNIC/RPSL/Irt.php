@@ -58,15 +58,4 @@ class Irt extends Object
         $this->create( 'source', Attr::REQUIRED, Attr::SINGLE )             # 1 +
             ->apply( 'strtoupper' );
     }
-
-    public function irt( $input )
-    {
-        $input = strtoupper( $input );
-
-        if ( strpos( $input, 'IRT-' ) === 0) {
-            return $input;
-        }
-
-        throw new InvalidValueException( 'Invalid IRT handle' );
-    }
 }

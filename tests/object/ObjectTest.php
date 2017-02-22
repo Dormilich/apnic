@@ -11,7 +11,7 @@ class ObjectTest extends TestCase
         $obj = new Object('foo');
 
         $this->assertSame('test', $obj->getType());
-        $this->assertSame('foo',  $obj->getPrimaryKey());
+        $this->assertSame('foo',  $obj->getHandle());
     }
 
     public function testGetAllAttributeNames()
@@ -93,11 +93,20 @@ class ObjectTest extends TestCase
         $this->assertEquals('y', $obj->attr('name')->getValue());
     }
 
-    public function testGetAttributeValueDirectly()
+    public function testGetAttributeValue()
     {
         $obj = new Object('foo');
 
         $this->assertSame('foo', $obj['test']);
+        $this->assertSame('foo', $obj->get('test'));
+        $this->assertSame('foo', $obj->attr('test')->getValue());
+    }
+
+    public function testGetUndefinedAttributeDirectlyYieldsUndefined()
+    {
+        $obj = new Object('foo');
+
+        $this->assertNull($obj['x']);
     }
 
     public function testSetAttributeValueDirectly()
@@ -175,8 +184,8 @@ class ObjectTest extends TestCase
         $this->assertGreaterThan(0, count($obj));
 
         $names = $defined = [];
-        foreach ($obj as $attr) {
-            $names[] = $attr->getName();
+        foreach ($obj as $name => $attr) {
+            $names[] = $name;
             $defined[] = $attr->isDefined();
         }
         $this->assertEquals(['test', 'name', 'comment'], $names);

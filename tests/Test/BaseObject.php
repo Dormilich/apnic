@@ -17,11 +17,11 @@ class BaseObject extends Object
      * 
      * @param string|NULL $value The value for the PK.
      */
-    public function __construct($value = null)
+    public function __construct( $value = null )
     {
         $this->init();
         $this->setType('test');
-        $this->setKey('test', $value);
+        $this->setKey(['test' => $value]);
     }
 
     /**

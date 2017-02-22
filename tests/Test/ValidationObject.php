@@ -22,7 +22,7 @@ class ValidationObject extends \Dormilich\APNIC\Object
     {
         $this->init();
         $this->setType('test');
-        $this->setKey('test', $value);
+        $this->setKey(['test' => $value]);
     }
 
     /**
@@ -42,6 +42,8 @@ class ValidationObject extends \Dormilich\APNIC\Object
         $this->create('country', Attr::OPTIONAL, Attr::SINGLE);
         // email validation (inherit)
         $this->create('notify',  Attr::OPTIONAL, Attr::MULTIPLE);
+        // handle (inherit)
+        $this->create('mnt-by',  Attr::REQUIRED, Attr::MULTIPLE);
         // auto complete (inherit)
         $this->create('changed', Attr::REQUIRED, Attr::MULTIPLE);
         // upper-case (inherit)

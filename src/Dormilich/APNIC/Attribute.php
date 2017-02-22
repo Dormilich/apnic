@@ -4,6 +4,7 @@
 namespace Dormilich\APNIC;
 
 use Countable;
+use stdClass;
 use Iterator;
 use JsonSerializable;
 use Traversable;
@@ -268,30 +269,30 @@ class Attribute implements AttributeInterface, Countable, Iterator, JsonSerializ
     }
 
     /**
-     * Convert the list of values into a name+value array.
+     * Convert a value into a JSON serialisable object.
      * 
-     * @return array
+     * @param string $value Attribute value.
+     * @return stdClass Object for serialisation.
      */
-    public function toArray()
+    private function toJsonObject( $value )
     {
-        $data = array_filter( $this->value, 'strlen' );
-        $data = array_map( function ( $value ) {
-            return [
-                'name'  => $this->name,
-                'value' => $value,
-            ];
-        }, $data );
+        $json = new stdClass;
+        $json->name = $this->name;
+        $json->value = $value;
 
-        return $data;
+        return $json;
     }
 
     /**
+     * Convert the list of values into a name+value object.
+     * 
      * @see http://php.net/JsonSerializable
      * @return array
      */
     public function jsonSerialize()
     {
-        return $this->toArray();
+        // empty lines might be intentional ...
+        return array_map( [$this, 'toJsonObject'], $this->value );
     }
 
     /**

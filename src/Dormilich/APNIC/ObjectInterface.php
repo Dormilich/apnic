@@ -20,6 +20,14 @@ interface ObjectInterface
     public function getHandle();
 
     /**
+     * Check if a specific attribute exists in this object.
+     * 
+     * @param string $name Name of the attribute.
+     * @return boolean Whether the attribute exists
+     */
+    public function has( $name );
+
+    /**
      * Get an attribute object specified by name.
      * 
      * @param string $name Name of the attribute.

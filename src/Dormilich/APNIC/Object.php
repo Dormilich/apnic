@@ -6,6 +6,7 @@ namespace Dormilich\APNIC;
 use ArrayAccess;
 use Countable;
 use Iterator;
+use JsonSerializable;
 use Dormilich\APNIC\Exceptions\IncompleteRPSLObjectException;
 use Dormilich\APNIC\Exceptions\InvalidAttributeException;
 use Dormilich\APNIC\Exceptions\InvalidDataTypeException;
@@ -192,6 +193,18 @@ abstract class Object implements ObjectInterface, ArrayAccess, Iterator, Countab
     }
 
     /**
+     * Check if a specific attribute exists in this object.
+     * 
+     * @param string $name Name of the attribute.
+     * @return boolean Whether the attribute exists
+     */
+    public function has( $name )
+    {
+        return isset( $this->attributes[ $name ] ) 
+            or isset( $this->generated[ $name ] ); 
+    }
+
+    /**
      * Get an attribute specified by name.
      * 
      * @param string $name Name of the attribute.
@@ -276,8 +289,7 @@ abstract class Object implements ObjectInterface, ArrayAccess, Iterator, Countab
      */
     public function offsetExists( $offset )
     {
-        return isset( $this->attributes[ $offset ] ) 
-            or isset( $this->generated[ $offset ] ); 
+        return $this->has( $offset );
     }
 
     /**
@@ -289,7 +301,7 @@ abstract class Object implements ObjectInterface, ArrayAccess, Iterator, Countab
      */
     public function offsetGet( $offset )
     {
-        if ( $this->offsetExists( $offset ) ) {
+        if ( $this->has( $offset ) ) {
             return $this->attr( $offset )->getValue();
         }
 
@@ -307,7 +319,7 @@ abstract class Object implements ObjectInterface, ArrayAccess, Iterator, Countab
      */
     public function offsetSet( $offset, $value )
     {
-        if ( $this->offsetExists( $offset ) ) {
+        if ( $this->has( $offset ) ) {
             $this->attr( $offset )->setValue( $value );
         }
     }
@@ -321,7 +333,7 @@ abstract class Object implements ObjectInterface, ArrayAccess, Iterator, Countab
      */
     public function offsetUnset( $offset )
     {
-        if ( $this->offsetExists( $offset ) ) {
+        if ( $this->has( $offset ) ) {
             $this->attr( $offset )->setValue( NULL );
         }
     }
@@ -383,15 +395,37 @@ abstract class Object implements ObjectInterface, ArrayAccess, Iterator, Countab
     }
 
     /**
-     * Convert the list of attributes into a name+value array.
+     * Convert object into an array, where all objects are converted into their 
+     * array equivalent.
      * 
      * @return array
      */
     public function toArray()
     {
-        return array_reduce( $this->getDefinedAttributes(), function ( array $list, AttributeInterface $attr ) {
-            return array_merge( $list, $attr->toArray() );
-        }, [] );
+        $json  = json_encode($this->jsonAttributes());
+        $array = json_decode($json, true);
+
+        return $array;
+    }
+
+    /**
+     * Get the array representation of all attributes that are populated with 
+     * values. Generated attributes are ignored since they are always generated 
+     * by the APNIC DB.
+     * 
+     * @return array JSON compatible array.
+     */
+    protected function jsonAttributes()
+    {
+        $defined = array_filter( $this->attributes, function ( AttributeInterface $attr ) {
+            return $attr->isDefined();
+        } );
+
+        $json = array_map( function ( JsonSerializable $attr ) {
+            return $attr->jsonSerialize();
+        }, $defined );
+
+        return array_reduce( $json, 'array_merge', [] );
     }
 
 // --- VALIDATION HELPERS ---------
@@ -461,8 +495,8 @@ abstract class Object implements ObjectInterface, ArrayAccess, Iterator, Countab
      */
     public function validateHandle( $handle )
     {
-        if ( ! preg_match( '~[^A-Z0-9-]~', $handle ) ) {
-            return trim( $handle, '-' );
+        if ( ! preg_match( '~[^A-Za-z0-9-]~', $handle ) ) {
+            return strtoupper( trim( $handle, '-' ) );
         }
 
         throw new InvalidValueException( 'Invalid RPSL object handle' );
