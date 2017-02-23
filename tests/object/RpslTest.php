@@ -289,42 +289,6 @@ class RpslTest extends TestCase
         $this->assertEquals(['nic-hdl'], $obj->getPrimaryKeyNames());
     }
 
-    public function testPoem()
-    {
-        $obj = new RPSL\Poem('Once more with Feeling');
-        $obj['form'] = 'form-limerick';
-
-        $this->assertSame('poem', $obj->getType());
-        $this->assertEquals(['poem'], $obj->getPrimaryKeyNames());
-    }
-
-    /**
-     * @expectedException \Dormilich\APNIC\Exceptions\InvalidValueException
-     * @expectedExceptionMessage Invalid poetic-form handle
-     */
-    public function testPoemWithInvalidFormFails()
-    {
-        $obj = new RPSL\Poem('test');
-        $obj['form'] = 'limerick';
-    }
-
-    public function testPoeticForm()
-    {
-        $obj = new RPSL\PoeticForm('FORM-HAIKU');
-
-        $this->assertSame('poetic-form', $obj->getType());
-        $this->assertEquals(['poetic-form'], $obj->getPrimaryKeyNames());
-    }
-
-    /**
-     * @expectedException \Dormilich\APNIC\Exceptions\InvalidValueException
-     * @expectedExceptionMessage Invalid poetic-form handle
-     */
-    public function testPoeticFormWithInvalidKeyFails()
-    {
-        new RPSL\PoeticForm('test');
-    }
-
     public function testRole()
     {
         $obj = new RPSL\Role('PHPUNIT-AP');
