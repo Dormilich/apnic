@@ -9,7 +9,7 @@ use Dormilich\APNIC\Exceptions\InvalidValueException;
 
 class Route6 extends Object
 {
-    const VERSION = '1.69';
+    const VERSION = '1.88';
 
     /**
      * Create a ROUTE6 RPSL object.
@@ -60,9 +60,9 @@ class Route6 extends Object
     {
         $this->create( 'route6', Attr::REQUIRED, Attr::SINGLE );            # 1 +
         $this->create( 'descr', Attr::REQUIRED, Attr::MULTIPLE );           # m +
-        $this->create( 'country', Attr::OPTIONAL, Attr::SINGLE );           # 1
         $this->create( 'origin', Attr::REQUIRED, Attr::SINGLE );            # 1 +
         $this->create( 'holes', Attr::OPTIONAL, Attr::MULTIPLE );           # m
+        $this->create( 'country', Attr::OPTIONAL, Attr::SINGLE );           # 1
         $this->create( 'member-of', Attr::OPTIONAL, Attr::MULTIPLE );       # m
         $this->create( 'inject', Attr::OPTIONAL, Attr::MULTIPLE );          # m
         $this->create( 'aggr-mtd', Attr::OPTIONAL, Attr::SINGLE );          # 1
@@ -74,9 +74,10 @@ class Route6 extends Object
         $this->create( 'mnt-lower', Attr::OPTIONAL, Attr::MULTIPLE );       # m
         $this->create( 'mnt-routes', Attr::OPTIONAL, Attr::MULTIPLE );      # m
         $this->create( 'mnt-by', Attr::REQUIRED, Attr::MULTIPLE );          # m +
-        $this->create( 'changed', Attr::REQUIRED, Attr::MULTIPLE );         # m +
         $this->create( 'source', Attr::REQUIRED, Attr::SINGLE )             # 1 +
             ->apply( 'strtoupper' );
+
+        $this->setGeneratedAttribute( 'last-modified', Attr::SINGLE );
     }
 
     public function route6( $input )

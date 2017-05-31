@@ -8,7 +8,7 @@ use Dormilich\APNIC\AttributeInterface as Attr;
 
 class AsBlock extends Object
 {
-    const VERSION = '1.69';
+    const VERSION = '1.88';
 
     /**
      * Create a AS-BLOCK object.
@@ -42,8 +42,9 @@ class AsBlock extends Object
         $this->create( 'notify', Attr::OPTIONAL, Attr::MULTIPLE );          # m
         $this->create( 'mnt-by', Attr::REQUIRED, Attr::MULTIPLE );          # m +
         $this->create( 'mnt-lower', Attr::OPTIONAL, Attr::MULTIPLE );       # m
-        $this->create( 'changed', Attr::REQUIRED, Attr::MULTIPLE );         # m +
         $this->create( 'source', Attr::REQUIRED, Attr::SINGLE )             # 1 +
             ->apply( 'strtoupper' );
+
+        $this->setGeneratedAttribute( 'last-modified', Attr::SINGLE );
     }
 }

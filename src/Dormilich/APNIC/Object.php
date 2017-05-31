@@ -535,30 +535,6 @@ abstract class Object implements ObjectInterface, ArrayAccess, Iterator, Countab
     }
 
     /**
-     * Helper callback for the `changed` attribute. If a valid email is given, 
-     * append the current date. If the input somewhat matches the required 
-     * format, pass it on.
-     * 
-     * @param string $input 
-     * @return string
-     * @throws InvalidValueException
-     */
-    public function changed( $input )
-    {
-        $input = trim( $input );
-
-        if ( filter_var( $input, \FILTER_VALIDATE_EMAIL ) ) {
-            return $input . date( ' Ymd' );
-        }
-
-        if ( preg_match( '~^\S+@\S+ (19|20)?\d\d[01]\d[0-3]\d$~', $input ) ) {
-            return $input;
-        }
-
-        throw new InvalidValueException( 'Invalid email or date format' );
-    }
-
-    /**
      * Helper callback for the 'admin-c' attribute. 
      * 
      * @param string $input 

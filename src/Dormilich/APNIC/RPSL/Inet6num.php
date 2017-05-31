@@ -9,7 +9,7 @@ use Dormilich\APNIC\Exceptions\InvalidValueException;
 
 class Inet6num extends Object
 {
-    const VERSION = '1.69';
+    const VERSION = '1.88';
 
     const STATUS = [
         'ALLOCATED PORTABLE',
@@ -56,9 +56,10 @@ class Inet6num extends Object
         $this->create( 'mnt-lower', Attr::OPTIONAL, Attr::MULTIPLE );       # m
         $this->create( 'mnt-routes', Attr::OPTIONAL, Attr::MULTIPLE );      # m
         $this->create( 'mnt-irt', Attr::REQUIRED, Attr::MULTIPLE );         # m +
-        $this->create( 'changed', Attr::REQUIRED, Attr::MULTIPLE );         # m +
         $this->create( 'source', Attr::REQUIRED, Attr::SINGLE )             # 1 +
             ->apply( 'strtoupper' );
+
+        $this->setGeneratedAttribute( 'last-modified', Attr::SINGLE );
     }
 
     public function inet6num( $input )

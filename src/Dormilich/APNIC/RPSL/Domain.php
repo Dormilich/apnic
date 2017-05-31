@@ -9,7 +9,7 @@ use Dormilich\APNIC\Exceptions\InvalidValueException;
 
 class Domain extends Object
 {
-    const VERSION = '1.69';
+    const VERSION = '1.88';
 
     /**
      * Create a DOMAIN RPSL object.
@@ -40,15 +40,16 @@ class Domain extends Object
         $this->create( 'admin-c', Attr::REQUIRED, Attr::MULTIPLE );         # m +
         $this->create( 'tech-c', Attr::REQUIRED, Attr::MULTIPLE );          # m +
         $this->create( 'zone-c', Attr::REQUIRED, Attr::MULTIPLE );          # m +
-        $this->create( 'nserver', Attr::REQUIRED, Attr::MULTIPLE );         # m
+        $this->create( 'nserver', Attr::OPTIONAL, Attr::MULTIPLE );         # m
         $this->create( 'ds-rdata', Attr::OPTIONAL, Attr::MULTIPLE );        # m
         $this->create( 'remarks', Attr::OPTIONAL, Attr::MULTIPLE );         # m
         $this->create( 'notify', Attr::OPTIONAL, Attr::MULTIPLE );          # m
         $this->create( 'mnt-by', Attr::REQUIRED, Attr::MULTIPLE );          # m +
         $this->create( 'mnt-lower', Attr::OPTIONAL, Attr::MULTIPLE );       # m
-        $this->create( 'changed', Attr::REQUIRED, Attr::MULTIPLE );         # m +
         $this->create( 'source', Attr::REQUIRED, Attr::SINGLE )             # 1 +
             ->apply( 'strtoupper' );
+
+        $this->setGeneratedAttribute( 'last-modified', Attr::SINGLE );
     }
 
     public function domain( $input )

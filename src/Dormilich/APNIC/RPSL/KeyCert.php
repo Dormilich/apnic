@@ -13,7 +13,7 @@ use Dormilich\APNIC\Exceptions\InvalidValueException;
  */
 class KeyCert extends Object
 {
-    const VERSION = '1.69';
+    const VERSION = '1.88';
 
     /**
      * Create a key certification (KEY-CERT) RPSL object.
@@ -38,9 +38,9 @@ class KeyCert extends Object
     protected function init()
     {
         $this->create( 'key-cert', Attr::REQUIRED, Attr::SINGLE );          # 1 +
-        $this->setGeneratedAttribute('method', Attr::SINGLE );              # 1 -
-        $this->setGeneratedAttribute('owner', Attr::MULTIPLE );             # m -
-        $this->setGeneratedAttribute('fingerpr', Attr::SINGLE );            # 1 -
+        $this->setGeneratedAttribute( 'method', Attr::SINGLE );             # 1 -
+        $this->setGeneratedAttribute( 'owner', Attr::MULTIPLE );            # m -
+        $this->setGeneratedAttribute( 'fingerpr', Attr::SINGLE );           # 1 -
         $this->create( 'certif', Attr::REQUIRED, Attr::MULTIPLE );          # m +
         $this->create( 'org', Attr::OPTIONAL, Attr::MULTIPLE );             # m
         $this->create( 'remarks', Attr::OPTIONAL, Attr::MULTIPLE );         # m
@@ -48,10 +48,10 @@ class KeyCert extends Object
         $this->create( 'admin-c', Attr::OPTIONAL, Attr::MULTIPLE );         # m
         $this->create( 'tech-c', Attr::OPTIONAL, Attr::MULTIPLE );          # m
         $this->create( 'mnt-by', Attr::REQUIRED, Attr::MULTIPLE );          # m +
-        $this->create( 'changed', Attr::REQUIRED, Attr::MULTIPLE );         # m +
         $this->create( 'source', Attr::REQUIRED, Attr::SINGLE )             # 1 +
             ->apply( 'strtoupper' );
 
+        $this->setGeneratedAttribute( 'last-modified', Attr::SINGLE );
     }
 
     public function keyCert( $input )

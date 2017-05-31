@@ -8,7 +8,7 @@ use Dormilich\APNIC\AttributeInterface as Attr;
 
 class Mntner extends Object
 {
-    const VERSION = '1.69';
+    const VERSION = '1.88';
 
     /**
      * Create a maintainer (MNTNER) RPSL object.
@@ -51,8 +51,9 @@ class Mntner extends Object
             ->apply( [$this, 'validateEmail'] );
         $this->create( 'mnt-by', Attr::REQUIRED, Attr::MULTIPLE );          # m +
         $this->create( 'referral-by', Attr::REQUIRED, Attr::SINGLE );       # 1 +
-        $this->create( 'changed', Attr::REQUIRED, Attr::MULTIPLE );         # m +
         $this->create( 'source', Attr::REQUIRED, Attr::SINGLE )             # 1 +
             ->apply( 'strtoupper' );
+
+        $this->setGeneratedAttribute( 'last-modified', Attr::SINGLE );
     }
 }

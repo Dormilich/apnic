@@ -9,7 +9,7 @@ use Dormilich\APNIC\Exceptions\InvalidValueException;
 
 class AutNum extends Object
 {
-    const VERSION = '1.69';
+    const VERSION = '1.88';
 
     /**
      * Create an AUTONOMOUS NUMBER (AUT-NUM) RPSL object.
@@ -38,8 +38,10 @@ class AutNum extends Object
         $this->create( 'descr', Attr::REQUIRED, Attr::MULTIPLE );           # m +
         $this->create( 'country', Attr::REQUIRED, Attr::SINGLE );           # 1 +
         $this->create( 'member-of', Attr::OPTIONAL, Attr::MULTIPLE );       # m
+        $this->create( 'import-via', Attr::OPTIONAL, Attr::MULTIPLE );      # m
         $this->create( 'import', Attr::OPTIONAL, Attr::MULTIPLE );          # m
         $this->create( 'mp-import', Attr::OPTIONAL, Attr::MULTIPLE );       # m
+        $this->create( 'export-via', Attr::OPTIONAL, Attr::MULTIPLE );      # m
         $this->create( 'export', Attr::OPTIONAL, Attr::MULTIPLE );          # m
         $this->create( 'mp-export', Attr::OPTIONAL, Attr::MULTIPLE );       # m
         $this->create( 'default', Attr::OPTIONAL, Attr::MULTIPLE );         # m
@@ -53,9 +55,10 @@ class AutNum extends Object
         $this->create( 'mnt-routes', Attr::OPTIONAL, Attr::MULTIPLE );      # m
         $this->create( 'mnt-by', Attr::REQUIRED, Attr::MULTIPLE );          # m +
         $this->create( 'mnt-irt', Attr::REQUIRED, Attr::MULTIPLE );         # m +
-        $this->create( 'changed', Attr::REQUIRED, Attr::MULTIPLE );         # m +
         $this->create( 'source', Attr::REQUIRED, Attr::SINGLE )             # 1 +
             ->apply( 'strtoupper' );
+
+        $this->setGeneratedAttribute( 'last-modified', Attr::SINGLE );
     }
 
     public function autNum( $input )
