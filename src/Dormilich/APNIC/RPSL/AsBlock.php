@@ -36,9 +36,9 @@ class AsBlock extends Object
         $this->create( 'descr', Attr::OPTIONAL, Attr::MULTIPLE );           # m
         $this->create( 'remarks', Attr::OPTIONAL, Attr::MULTIPLE );         # m
         $this->create( 'country', Attr::OPTIONAL, Attr::SINGLE );           # 1
+        $this->create( 'org', Attr::OPTIONAL, Attr::MULTIPLE );             # m
         $this->create( 'admin-c', Attr::REQUIRED, Attr::MULTIPLE );         # m +
         $this->create( 'tech-c', Attr::REQUIRED, Attr::MULTIPLE );          # m +
-        $this->create( 'org', Attr::OPTIONAL, Attr::MULTIPLE );             # m
         $this->create( 'notify', Attr::OPTIONAL, Attr::MULTIPLE );          # m
         $this->create( 'mnt-by', Attr::REQUIRED, Attr::MULTIPLE );          # m +
         $this->create( 'mnt-lower', Attr::OPTIONAL, Attr::MULTIPLE );       # m

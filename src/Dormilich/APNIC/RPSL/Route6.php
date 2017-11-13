@@ -63,6 +63,7 @@ class Route6 extends Object
         $this->create( 'origin', Attr::REQUIRED, Attr::SINGLE );            # 1 +
         $this->create( 'holes', Attr::OPTIONAL, Attr::MULTIPLE );           # m
         $this->create( 'country', Attr::OPTIONAL, Attr::SINGLE );           # 1
+        $this->create( 'org', Attr::OPTIONAL, Attr::MULTIPLE );             # m
         $this->create( 'member-of', Attr::OPTIONAL, Attr::MULTIPLE );       # m
         $this->create( 'inject', Attr::OPTIONAL, Attr::MULTIPLE );          # m
         $this->create( 'aggr-mtd', Attr::OPTIONAL, Attr::SINGLE );          # 1
