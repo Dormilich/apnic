@@ -125,7 +125,7 @@ try {
   if ($john = $reader->parse($whois)) {
     $john
       ->add('phone', '+1 234 567 8901')
-      ->add('changed', 'john.doe@example.com')
+      ->add('e-mail', 'john.doe@example.com')
     ;
     $body = $john . 'password: ' . $my_apnic_password;
     // please use a proper email client!
