@@ -1,15 +1,14 @@
 <?php
 
-use Test\ValidationObject as Object;
-use Dormilich\APNIC\AttributeInterface as Attr;
 use PHPUnit\Framework\TestCase;
+use Test\BaseObject;
 
 class ValidationTest extends TestCase
 {
     public function testChangedValidatorWithEmail()
     {
         $email = 'test@example.com';
-        $obj = new Object('foo');
+        $obj = new BaseObject('foo');
         $obj['changed'] = $email;
 
         $expected = $email . ' ' . date('Ymd');
@@ -19,7 +18,7 @@ class ValidationTest extends TestCase
     public function testChangedValidatorWithEmailAndDate()
     {
         $email = 'test@example.com ';
-        $obj = new Object('foo');
+        $obj = new BaseObject('foo');
 
         $obj['changed'] = $email . date('Ymd');
         $this->assertEquals([$email . date('Ymd')], $obj['changed']);
@@ -34,7 +33,7 @@ class ValidationTest extends TestCase
      */
     public function testChangedValidatorWithInvalidEmailFails()
     {
-        $obj = new Object('foo');
+        $obj = new BaseObject('foo');
         $obj['changed'] = 'test@example.com 12/04/2011';
     }
 
@@ -44,13 +43,13 @@ class ValidationTest extends TestCase
      */
     public function testChangedValidatorWithInvalidDateFails()
     {
-        $obj = new Object('foo');
+        $obj = new BaseObject('foo');
         $obj['changed'] = 'not an email address';
     }
 
     public function testCountryValidator()
     {
-        $obj = new Object('foo');
+        $obj = new BaseObject('foo');
         $obj['country'] = 'de';
 
         $this->assertSame('DE', $obj['country']);
@@ -62,13 +61,13 @@ class ValidationTest extends TestCase
      */
     public function testCountryValidatorFailsForLongStrings()
     {
-        $obj = new Object('foo');
+        $obj = new BaseObject('foo');
         $obj['country'] = 'ger';
     }
 
     public function testNotifyValidator()
     {
-        $obj = new Object('foo');
+        $obj = new BaseObject('foo');
         $obj['notify'] = 'test@example.com';
 
         $this->assertEquals(['test@example.com'], $obj['notify']);
@@ -80,13 +79,13 @@ class ValidationTest extends TestCase
      */
     public function testCountryValidatorFailsForInvalidEmail()
     {
-        $obj = new Object('foo');
+        $obj = new BaseObject('foo');
         $obj['notify'] = 'not an email address';
     }
 
     public function testPhoneValidator()
     {
-        $obj = new Object('foo');
+        $obj = new BaseObject('foo');
         // taken from the APNIC docs
         $obj->add('fax-no', '+12 34 567890 010')
             ->add('fax-no', '+681 368 0844 ext. 32')
@@ -101,13 +100,13 @@ class ValidationTest extends TestCase
      */
     public function testPhoneValidatorFailsForInvalidNumber()
     {
-        $obj = new Object('foo');
+        $obj = new BaseObject('foo');
         $obj['fax-no'] = '123 75319';
     }
 
     public function testHandleValidator()
     {
-        $obj = new Object('foo');
+        $obj = new BaseObject('foo');
         $obj['mnt-by'] = 'phpunit-AP';
 
         $this->assertEquals(['PHPUNIT-AP'], $obj['mnt-by']);
@@ -119,13 +118,13 @@ class ValidationTest extends TestCase
      */
     public function testHandleValidatorFailsForInvalidString()
     {
-        $obj = new Object('foo');
+        $obj = new BaseObject('foo');
         $obj['mnt-by'] = '127.0.0.1';
     }
 
     public function testObjectValidity()
     {
-        $obj = new Object('foo');
+        $obj = new BaseObject('foo');
 
         $this->assertFalse($obj->isValid());
 

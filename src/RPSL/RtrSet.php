@@ -3,10 +3,10 @@
 
 namespace Dormilich\APNIC\RPSL;
 
-use Dormilich\APNIC\Object;
+use Dormilich\APNIC\AbstractObject;
 use Dormilich\APNIC\AttributeInterface as Attr;
 
-class RtrSet extends Object
+class RtrSet extends AbstractObject
 {
     const VERSION = '1.88';
 

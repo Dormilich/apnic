@@ -3,7 +3,7 @@
 
 namespace Dormilich\APNIC\RPSL;
 
-use Dormilich\APNIC\Object;
+use Dormilich\APNIC\AbstractObject;
 use Dormilich\APNIC\AttributeInterface as Attr;
 use Dormilich\APNIC\Exceptions\InvalidValueException;
 
@@ -11,7 +11,7 @@ use Dormilich\APNIC\Exceptions\InvalidValueException;
  * Be aware that the 'method', 'owner' and 'fingerpr' attributes 
  * must not be set/updated/deleted by the user.
  */
-class KeyCert extends Object
+class KeyCert extends AbstractObject
 {
     const VERSION = '1.88';
 

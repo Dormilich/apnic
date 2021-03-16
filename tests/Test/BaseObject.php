@@ -4,12 +4,12 @@
 namespace Test;
 
 use Dormilich\APNIC\AttributeInterface as Attr;
-use Dormilich\APNIC\Object;
+use Dormilich\APNIC\AbstractObject;
 
 /**
  * An object with a bit of flexibility for testing purposes.
  */
-class BaseObject extends Object
+class BaseObject extends AbstractObject
 {
     /**
      * Most basic object implementation to test the base class’ principal 

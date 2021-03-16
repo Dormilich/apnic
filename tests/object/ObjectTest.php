@@ -1,14 +1,13 @@
 <?php
 
-use Test\BaseObject as Object;
-use Dormilich\APNIC\AttributeInterface as Attr;
 use PHPUnit\Framework\TestCase;
+use Test\BaseObject;
 
 class ObjectTest extends TestCase
 {
     public function testSetupObject()
     {
-        $obj = new Object('foo');
+        $obj = new BaseObject('foo');
 
         $this->assertSame('test', $obj->getType());
         $this->assertSame('foo',  $obj->getHandle());
@@ -16,7 +15,7 @@ class ObjectTest extends TestCase
 
     public function testGetAllAttributeNames()
     {
-        $obj = new Object('foo');
+        $obj = new BaseObject('foo');
         $names = $obj->getAttributeNames();
 
         $this->assertCount(4, $names);
@@ -25,7 +24,7 @@ class ObjectTest extends TestCase
 
     public function testGetAttributeObject()
     {
-        $obj = new Object('foo');
+        $obj = new BaseObject('foo');
         $attr = $obj->attr('test');
 
         $this->assertInstanceOf('Dormilich\APNIC\Attribute', $attr);
@@ -33,7 +32,7 @@ class ObjectTest extends TestCase
 
     public function testGetGeneratedAttributeObject()
     {
-        $obj = new Object('foo');
+        $obj = new BaseObject('foo');
         $attr = $obj->attr('last-modified');
 
         $this->assertInstanceOf('Dormilich\APNIC\Attribute', $attr);
@@ -45,13 +44,13 @@ class ObjectTest extends TestCase
      */
     public function testGetUndefinedAttributeFails()
     {
-        $obj = new Object('foo');
+        $obj = new BaseObject('foo');
         $attr = $obj->attr(1);
     }
 
     public function testSetMultipleAttributeValue()
     {
-        $obj = new Object('foo');
+        $obj = new BaseObject('foo');
 
         $obj->set('comment', 'x');
         $this->assertEquals(['x'], $obj->attr('comment')->getValue());
@@ -62,7 +61,7 @@ class ObjectTest extends TestCase
 
     public function testSetSingleAttributeValue()
     {
-        $obj = new Object('foo');
+        $obj = new BaseObject('foo');
 
         $obj->set('name', 'x');
         $this->assertEquals('x', $obj->attr('name')->getValue());
@@ -73,7 +72,7 @@ class ObjectTest extends TestCase
 
     public function testAddMultipleAttributeValue()
     {
-        $obj = new Object('foo');
+        $obj = new BaseObject('foo');
 
         $obj->add('comment', 'x');
         $this->assertEquals(['x'], $obj->attr('comment')->getValue());
@@ -84,7 +83,7 @@ class ObjectTest extends TestCase
 
     public function testAddSingleAttributeValue()
     {
-        $obj = new Object('foo');
+        $obj = new BaseObject('foo');
 
         $obj->add('name', 'x');
         $this->assertEquals('x', $obj->attr('name')->getValue());
@@ -95,7 +94,7 @@ class ObjectTest extends TestCase
 
     public function testGetAttributeValue()
     {
-        $obj = new Object('foo');
+        $obj = new BaseObject('foo');
 
         $this->assertSame('foo', $obj['test']);
         $this->assertSame('foo', $obj->get('test'));
@@ -104,14 +103,14 @@ class ObjectTest extends TestCase
 
     public function testGetUndefinedAttributeDirectlyYieldsUndefined()
     {
-        $obj = new Object('foo');
+        $obj = new BaseObject('foo');
 
         $this->assertNull($obj['x']);
     }
 
     public function testSetAttributeValueDirectly()
     {
-        $obj = new Object('foo');
+        $obj = new BaseObject('foo');
         $obj['name'] = 'quux';
 
         $this->assertSame('quux', $obj['name']);
@@ -119,7 +118,7 @@ class ObjectTest extends TestCase
 
     public function testUnsetAttributeValueDirectly()
     {
-        $obj = new Object('foo');
+        $obj = new BaseObject('foo');
 
         $obj['name'] = 'quux';
         $this->assertSame('quux', $obj['name']);
@@ -130,7 +129,7 @@ class ObjectTest extends TestCase
 
     public function testIssetAttributeValue()
     {
-        $obj = new Object('foo');
+        $obj = new BaseObject('foo');
 
         $this->assertTrue(isset($obj['name']));
         $this->assertFalse(isset($obj['flix']));
@@ -138,7 +137,7 @@ class ObjectTest extends TestCase
 
     public function testObjectToArrayConversion()
     {
-        $obj = new Object('foo');
+        $obj = new BaseObject('foo');
         $obj['name'] = 'quux';
 
         $expected = [
@@ -150,7 +149,7 @@ class ObjectTest extends TestCase
 
     public function testObjectStringification()
     {
-        $obj = new Object('foo');
+        $obj = new BaseObject('foo');
         $obj['comment'] = ['fizz', 'buzz'];
 
         $text = (string) $obj;
@@ -170,7 +169,7 @@ class ObjectTest extends TestCase
 
     public function testCountDefinedAttributes()
     {
-        $obj = new Object;
+        $obj = new BaseObject;
         $obj['comment'] = ['fizz', 'buzz'];
 
         $this->assertCount(1, $obj);
@@ -178,7 +177,7 @@ class ObjectTest extends TestCase
 
     public function testIteratorInForeach()
     {
-        $obj = new Object('foo');
+        $obj = new BaseObject('foo');
         $obj['comment'] = ['fizz', 'buzz'];
 
         $this->assertGreaterThan(0, count($obj));

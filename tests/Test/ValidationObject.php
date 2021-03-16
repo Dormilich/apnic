@@ -8,7 +8,7 @@ use Dormilich\APNIC\AttributeInterface as Attr;
 /**
  * An object with attributes for inherited validation tests.
  */
-class ValidationObject extends \Dormilich\APNIC\Object
+class ValidationObject extends \Dormilich\APNIC\AbstractObject
 {
     /**
      * Create stand-in object for any RIPE object data. 

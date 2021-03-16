@@ -3,11 +3,11 @@
 
 namespace Dormilich\APNIC\RPSL;
 
-use Dormilich\APNIC\Object;
+use Dormilich\APNIC\AbstractObject;
 use Dormilich\APNIC\AttributeInterface as Attr;
 use Dormilich\APNIC\Exceptions\InvalidValueException;
 
-class Irt extends Object
+class Irt extends AbstractObject
 {
     const VERSION = '1.88';
 

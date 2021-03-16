@@ -1,5 +1,5 @@
 <?php
-// Object.php
+// AbstractObject.php
 
 namespace Dormilich\APNIC;
 
@@ -25,7 +25,7 @@ use Dormilich\APNIC\Exceptions\InvalidValueException;
  *  - set the primary key on instantiation
  *  - set a "VERSION" constant
  */
-abstract class Object implements ObjectInterface, ArrayAccess, Iterator, Countable
+abstract class AbstractObject implements ObjectInterface, ArrayAccess, Iterator, Countable
 {
     /**
      * The type of the object.
@@ -310,7 +310,7 @@ abstract class Object implements ObjectInterface, ArrayAccess, Iterator, Countab
 
     /**
      * Set an Attibute’s value. Existing values will be replaced. 
-     * For adding values use Object::add().
+     * For adding values use AbstractObject::add().
      * 
      * @see http://php.net/ArrayAccess
      * @param string $offset Attribute name.
