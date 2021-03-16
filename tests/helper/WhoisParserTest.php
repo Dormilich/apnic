@@ -1,5 +1,6 @@
 <?php
 
+use Dormilich\APNIC\Exceptions\InvalidAttributeException;
 use Dormilich\APNIC\Utilities\WhoisParser;
 use Dormilich\APNIC\RPSL\Mntner;
 use Dormilich\APNIC\RPSL\Role;
@@ -13,16 +14,15 @@ class WhoisParserTest extends TestCase
         return file_get_contents( $file );
     }
 
-    /**
-     * @expectedException RuntimeException
-     * @expectedExceptionCode 101
-     * @expectedExceptionMessage no entries found
-     */
     public function testNotFoundThowsError()
     {
+        $this->expectException('RuntimeException');
+        $this->expectExceptionCode(101);
+        $this->expectExceptionMessage('no entries found');
+
         $text = $this->loadText( 'not-found' );
         $parser = new WhoisParser;
-        $obj = $parser->parse( $text );
+        $parser->parse( $text );
     }
 
     public function testParseTextAutoDetectObjectType()
@@ -62,24 +62,22 @@ class WhoisParserTest extends TestCase
         $this->assertSame( 'MAINT-EXAMPLE-HK', $obj->getHandle() );
     }
 
-    /**
-     * @expectedException Dormilich\APNIC\Exceptions\InvalidAttributeException
-     * @expectedExceptionMessage Attribute "mntner" is not defined for the ROLE object.
-     */
     public function testParstTextWithIncorrectDefaultObjectFails()
     {
+        $this->expectException(InvalidAttributeException::class);
+        $this->expectExceptionMessage('Attribute "mntner" is not defined for the ROLE object');
+
         $text = $this->loadText( 'maint-example-hk' );
         $role = new Role;
         $parser = new WhoisParser;
-        $obj = $parser->parse( $text, $role );
+        $parser->parse( $text, $role );
     }
 
-    /**
-     * @expectedException UnexpectedValueException
-     * @expectedExceptionMessage No class found for type address
-     */
     public function testParseMalformedTextFails()
     {
+        $this->expectException('UnexpectedValueException');
+        $this->expectExceptionMessage('No class found for type address');
+
         // snippet of Role ...
         $text = <<<RPSL
 address:        Any Street 1
@@ -90,7 +88,7 @@ mnt-by:         MAINT-EXAMPLE-HK
 changed:        hm-changed@apnic.net 19700101
 RPSL;
         $parser = new WhoisParser;
-        $obj = $parser->parse( $text );
+        $parser->parse( $text );
     }
 
     public function testNonRpslTextReturnsNothing()

@@ -1,5 +1,6 @@
 <?php
 
+use Dormilich\APNIC\Exceptions\InvalidValueException;
 use PHPUnit\Framework\TestCase;
 use Test\BaseObject;
 
@@ -27,22 +28,20 @@ class ValidationTest extends TestCase
         $this->assertEquals([$email . date('ymd')], $obj['changed']);
     }
 
-    /**
-     * @expectedException \Dormilich\APNIC\Exceptions\InvalidValueException
-     * @expectedExceptionMessage Invalid email or date format
-     */
     public function testChangedValidatorWithInvalidEmailFails()
     {
+        $this->expectException(InvalidValueException::class);
+        $this->expectExceptionMessage('Invalid email or date format');
+
         $obj = new BaseObject('foo');
         $obj['changed'] = 'test@example.com 12/04/2011';
     }
 
-    /**
-     * @expectedException \Dormilich\APNIC\Exceptions\InvalidValueException
-     * @expectedExceptionMessage Invalid email or date format
-     */
     public function testChangedValidatorWithInvalidDateFails()
     {
+        $this->expectException(InvalidValueException::class);
+        $this->expectExceptionMessage('Invalid email or date format');
+
         $obj = new BaseObject('foo');
         $obj['changed'] = 'not an email address';
     }
@@ -55,12 +54,11 @@ class ValidationTest extends TestCase
         $this->assertSame('DE', $obj['country']);
     }
 
-    /**
-     * @expectedException \Dormilich\APNIC\Exceptions\InvalidValueException
-     * @expectedExceptionMessage Invalid country code
-     */
     public function testCountryValidatorFailsForLongStrings()
     {
+        $this->expectException(InvalidValueException::class);
+        $this->expectExceptionMessage('Invalid country code');
+
         $obj = new BaseObject('foo');
         $obj['country'] = 'ger';
     }
@@ -73,12 +71,11 @@ class ValidationTest extends TestCase
         $this->assertEquals(['test@example.com'], $obj['notify']);
     }
 
-    /**
-     * @expectedException \Dormilich\APNIC\Exceptions\InvalidValueException
-     * @expectedExceptionMessage Invalid email address
-     */
     public function testCountryValidatorFailsForInvalidEmail()
     {
+        $this->expectException(InvalidValueException::class);
+        $this->expectExceptionMessage('Invalid email address');
+
         $obj = new BaseObject('foo');
         $obj['notify'] = 'not an email address';
     }
@@ -94,12 +91,11 @@ class ValidationTest extends TestCase
         $this->assertEquals($expected, $obj['fax-no']);
     }
 
-    /**
-     * @expectedException \Dormilich\APNIC\Exceptions\InvalidValueException
-     * @expectedExceptionMessage Invalid phone/fax number
-     */
     public function testPhoneValidatorFailsForInvalidNumber()
     {
+        $this->expectException(InvalidValueException::class);
+        $this->expectExceptionMessage('Invalid phone/fax number');
+
         $obj = new BaseObject('foo');
         $obj['fax-no'] = '123 75319';
     }
@@ -112,12 +108,11 @@ class ValidationTest extends TestCase
         $this->assertEquals(['PHPUNIT-AP'], $obj['mnt-by']);
     }
 
-    /**
-     * @expectedException \Dormilich\APNIC\Exceptions\InvalidValueException
-     * @expectedExceptionMessage Invalid RPSL object handle
-     */
     public function testHandleValidatorFailsForInvalidString()
     {
+        $this->expectException(InvalidValueException::class);
+        $this->expectExceptionMessage('Invalid RPSL object handle');
+
         $obj = new BaseObject('foo');
         $obj['mnt-by'] = '127.0.0.1';
     }

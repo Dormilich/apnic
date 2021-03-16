@@ -2,6 +2,7 @@
 
 use Dormilich\APNIC\Attribute;
 use Dormilich\APNIC\AttributeInterface as Attr;
+use Dormilich\APNIC\Exceptions\InvalidDataTypeException;
 use PHPUnit\Framework\TestCase;
 use Test\BaseObject;
 
@@ -111,11 +112,10 @@ class AttributeTest extends TestCase
         $this->assertSame(['fizz', 'buzz'], $attr->getValue());
     }
 
-    /**
-     * @expectedException \Dormilich\APNIC\Exceptions\InvalidDataTypeException
-     */
     public function testSingleAttributeDoesNotAllowArrayInput()
     {
+        $this->expectException(InvalidDataTypeException::class);
+
         $attr = new Attribute('foo', Attr::REQUIRED, Attr::SINGLE);
         $attr->setValue(['fizz', 'buzz']);
     }
@@ -153,22 +153,20 @@ class AttributeTest extends TestCase
         $this->assertSame($obj->getHandle(), $attr->getValue());
     }
 
-    /**
-     * @expectedException \Dormilich\APNIC\Exceptions\InvalidDataTypeException
-     * @expectedExceptionMessageRegExp # \[foo\] #
-     */
     public function testAttributeDoesNotAcceptResource()
     {
+        $this->expectException(InvalidDataTypeException::class);
+        $this->expectExceptionMessage('[foo]');
+
         $attr = new Attribute('foo', Attr::REQUIRED, Attr::SINGLE);
         $attr->setValue(tmpfile());
     }
 
-    /**
-     * @expectedException \Dormilich\APNIC\Exceptions\InvalidDataTypeException
-     * @expectedExceptionMessageRegExp # \[foo\] #
-     */
     public function testAttributeDoesNotAcceptArbitraryObject()
     {
+        $this->expectException(InvalidDataTypeException::class);
+        $this->expectExceptionMessage('[foo]');
+
         $attr = new Attribute('foo', Attr::REQUIRED, Attr::SINGLE);
         $attr->setValue(new stdClass);
     }
@@ -191,20 +189,18 @@ class AttributeTest extends TestCase
         $this->assertSame(['fizz', 'buzz'], $attr->getValue());
     }
 
-    /**
-     * @expectedException \Dormilich\APNIC\Exceptions\InvalidDataTypeException
-     */
     public function testMultipleAttributeDoesNotAllowNonScalarArray()
     {
+        $this->expectException(InvalidDataTypeException::class);
+
         $attr = new Attribute('foo', Attr::REQUIRED, Attr::MULTIPLE);
         $attr->setValue([NULL]);
     }
 
-    /**
-     * @expectedException \Dormilich\APNIC\Exceptions\InvalidDataTypeException
-     */
     public function testMultipleAttributeDoesNotAllowNestedArray()
     {
+        $this->expectException(InvalidDataTypeException::class);
+
         $attr = new Attribute('foo', Attr::REQUIRED, Attr::MULTIPLE);
         $attr->setValue(['bar', [1,2,3]]);
     }
@@ -234,12 +230,11 @@ TXT;
         $this->assertCount(7, $attr);
     }
 
-    /**
-     * @expectedException \Dormilich\APNIC\Exceptions\InvalidDataTypeException
-     * @expectedExceptionMessage The [foo] attribute does not allow the array data type.
-     */
     public function testsingleAttributeDoesNotAllowMultilineText()
     {
+        $this->expectException(InvalidDataTypeException::class);
+        $this->expectExceptionMessage('The [foo] attribute does not allow the array data type.');
+
         $attr = new Attribute('foo', Attr::REQUIRED, Attr::SINGLE);
 
         $value = <<<TXT

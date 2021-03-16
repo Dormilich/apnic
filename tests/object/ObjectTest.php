@@ -1,5 +1,6 @@
 <?php
 
+use Dormilich\APNIC\Exceptions\InvalidAttributeException;
 use PHPUnit\Framework\TestCase;
 use Test\BaseObject;
 
@@ -38,14 +39,13 @@ class ObjectTest extends TestCase
         $this->assertInstanceOf('Dormilich\APNIC\Attribute', $attr);
     }
 
-    /**
-     * @expectedException \Dormilich\APNIC\Exceptions\InvalidAttributeException
-     * @expectedExceptionMessageRegExp /Attribute "1" is not defined for the [A-Z]+ object/
-     */
     public function testGetUndefinedAttributeFails()
     {
+        $this->expectException(InvalidAttributeException::class);
+        $this->expectExceptionMessageRegExp('/Attribute "1" is not defined for the [A-Z]+ object/');
+
         $obj = new BaseObject('foo');
-        $attr = $obj->attr(1);
+        $obj->attr(1);
     }
 
     public function testSetMultipleAttributeValue()
