@@ -7,7 +7,6 @@ use Countable;
 use stdClass;
 use Iterator;
 use JsonSerializable;
-use Traversable;
 use Dormilich\APNIC\Exceptions\InvalidDataTypeException;
 
 class Attribute implements AttributeInterface, Countable, Iterator, JsonSerializable

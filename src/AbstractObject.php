@@ -7,9 +7,7 @@ use ArrayAccess;
 use Countable;
 use Iterator;
 use JsonSerializable;
-use Dormilich\APNIC\Exceptions\IncompleteRPSLObjectException;
 use Dormilich\APNIC\Exceptions\InvalidAttributeException;
-use Dormilich\APNIC\Exceptions\InvalidDataTypeException;
 use Dormilich\APNIC\Exceptions\InvalidValueException;
 
 /**
