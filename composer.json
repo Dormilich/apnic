@@ -15,7 +15,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Dormilich\\": "src/Dormilich/"
+            "Dormilich\\APNIC\\": "src/"
         }
     },
     "require-dev": {
