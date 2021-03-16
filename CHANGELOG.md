@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.2.0
+
+- BC Break: Dropped support for PHP 5
+- Fixed: Renamed base object to avoid conflict with the reserved keyword in PHP 7.2+.
+
 ## 1.1.1
 
 - Updated object definitions according to what was found in the live database (version 1.88.15-43) 
