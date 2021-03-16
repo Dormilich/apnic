@@ -47,7 +47,7 @@ class WhoisParserTest extends TestCase
         $this->assertNull( $obj[ 'abuse-mailbox' ] );
         $this->assertEquals( ['MAINT-EXAMPLE-HK'], $obj[ 'mnt-by' ] );
         $this->assertSame( 'APNIC-HM', $obj[ 'referral-by' ] );
-        $this->assertEquals( ['hm-changed@apnic.net 19700101'], $obj[ 'changed' ] );
+        $this->assertSame( '1970-01-01', $obj[ 'last-modified' ] );
         $this->assertSame( 'APNIC', $obj[ 'source' ] );
     }
 

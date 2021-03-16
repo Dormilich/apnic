@@ -250,7 +250,6 @@ class RpslTest extends TestCase
             ->set('tech-c', 'TEST-APNIC')
             ->set('admin-c', 'TEST-APNIC')
             ->set('mnt-by', 'MAINT-EU-TEST')
-            ->set('changed', 'hostmaster@example.com')
             ->set('source', 'APNIC')
         ;
         // either peering attribute makes it valid:

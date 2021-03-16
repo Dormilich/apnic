@@ -44,8 +44,6 @@ class ValidationObject extends \Dormilich\APNIC\AbstractObject
         $this->create('notify',  Attr::OPTIONAL, Attr::MULTIPLE);
         // handle (inherit)
         $this->create('mnt-by',  Attr::REQUIRED, Attr::MULTIPLE);
-        // auto complete (inherit)
-        $this->create('changed', Attr::REQUIRED, Attr::MULTIPLE);
         // upper-case (inherit)
         $this->create('source',  Attr::REQUIRED, Attr::SINGLE);
     }

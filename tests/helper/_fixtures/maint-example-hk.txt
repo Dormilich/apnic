@@ -11,7 +11,7 @@ upd-to:         abuse@example.com
 auth:           # Filtered
 mnt-by:         MAINT-EXAMPLE-HK
 referral-by:    APNIC-HM
-changed:        hm-changed@apnic.net 19700101
+last-modified:  1970-01-01
 source:         APNIC
 
 role:           Example, Ltd. administrator
@@ -26,7 +26,7 @@ admin-c:        XL1-AP
 tech-c:         XL1-AP
 nic-hdl:        XL1-AP
 mnt-by:         MAINT-EXAMPLE-HK
-changed:        hm-changed@apnic.net 19700101
+last-modified:  1970-01-01
 source:         APNIC
 
 % This query was served by the APNIC Whois Service version 1.69.1-APNICv1r0 (UNDEFINED)
