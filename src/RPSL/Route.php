@@ -1,26 +1,27 @@
 <?php
-// Route6.php
+// Route.php
 
 namespace Dormilich\APNIC\RPSL;
 
-use Dormilich\APNIC\Object;
+use Dormilich\APNIC\AbstractObject;
 use Dormilich\APNIC\AttributeInterface as Attr;
 use Dormilich\APNIC\Exceptions\InvalidValueException;
 
-class Route6 extends Object
+class Route extends AbstractObject
 {
     const VERSION = '1.88';
 
     /**
-     * Create a ROUTE6 RPSL object.
+     * Create a ROUTE RPSL object.
      * 
-     * @param string $value The IPv6 CIDR of the route optionally extended by the origin ASN.
+     * @param string $value The IPv4 address prefix of the route.
+     *      Forms a combined primary key with the 'origin' attribute.
      * @return self
      */
     public function __construct( $value )
     {
         $this->init();
-        $this->setType( 'route6' );
+        $this->setType( 'route' );
 
         $this->parseKey( $value );
     }
@@ -37,7 +38,7 @@ class Route6 extends Object
             $value = $value->getHandle();
         }
 
-        $pk = [ 'route6' => NULL, 'origin' => NULL ];
+        $pk = [ 'route' => NULL, 'origin' => NULL ];
 
         if ( ! preg_match( '/AS\d+/', $value, $match ) ) {
             throw new InvalidValueException( 'Invalid AS number' );
@@ -46,19 +47,19 @@ class Route6 extends Object
         $pk[ 'origin' ] = $match[ 0 ];
         $value = str_replace( $match[ 0 ], '', $value );
 
-        $pk[ 'route6' ] = trim( $value );
+        $pk[ 'route' ] = trim( $value );
 
         $this->setKey( $pk );
     }
 
     /**
-     * Defines attributes for the ROUTE6 RPSL object. 
+     * Defines attributes for the ROUTE RPSL object. 
      * 
      * @return void
      */
     protected function init()
     {
-        $this->create( 'route6', Attr::REQUIRED, Attr::SINGLE );            # 1 +
+        $this->create( 'route', Attr::REQUIRED, Attr::SINGLE );             # 1 +
         $this->create( 'descr', Attr::REQUIRED, Attr::MULTIPLE );           # m +
         $this->create( 'origin', Attr::REQUIRED, Attr::SINGLE );            # 1 +
         $this->create( 'holes', Attr::OPTIONAL, Attr::MULTIPLE );           # m
@@ -81,21 +82,21 @@ class Route6 extends Object
         $this->setGeneratedAttribute( 'last-modified', Attr::SINGLE );
     }
 
-    public function route6( $input )
+    public function route( $input )
     {
         if ( strpos( $input, '/' ) ) {
             list( $ip, $length ) = explode( '/', $input, 2 );
 
-            $ip = filter_var( $ip, \FILTER_VALIDATE_IP, \FILTER_FLAG_IPV6 );
+            $ip = filter_var( $ip, \FILTER_VALIDATE_IP, \FILTER_FLAG_IPV4 );
             $length = filter_var( $length, \FILTER_VALIDATE_INT, 
-                [ 'options' => [ 'min_range' => 0, 'max_range' => 128 ] ] );
+                [ 'options' => [ 'min_range' => 0, 'max_range' => 32 ] ] );
 
             if ( $ip and is_int( $length ) ) {
                 return $input;
             }
         }
 
-        throw new InvalidValueException( 'Invalid IPv6 route' );
+        throw new InvalidValueException( 'Invalid IPv4 route' );
     }
 
     public function origin( $input )

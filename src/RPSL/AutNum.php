@@ -3,11 +3,11 @@
 
 namespace Dormilich\APNIC\RPSL;
 
-use Dormilich\APNIC\Object;
+use Dormilich\APNIC\AbstractObject;
 use Dormilich\APNIC\AttributeInterface as Attr;
 use Dormilich\APNIC\Exceptions\InvalidValueException;
 
-class AutNum extends Object
+class AutNum extends AbstractObject
 {
     const VERSION = '1.88';
 

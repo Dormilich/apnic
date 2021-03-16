@@ -1,58 +1,53 @@
 <?php
-// Irt.php
+// Person.php
 
 namespace Dormilich\APNIC\RPSL;
 
-use Dormilich\APNIC\Object;
+use Dormilich\APNIC\AbstractObject;
 use Dormilich\APNIC\AttributeInterface as Attr;
-use Dormilich\APNIC\Exceptions\InvalidValueException;
 
-class Irt extends Object
+class Person extends AbstractObject
 {
     const VERSION = '1.88';
 
     /**
-     * Create an incident response team (IRT) RPSL object.
+     * Create a PERSON RPSL object.
      * 
-     * @param string $value The name for the response team.
+     * @param string $value NIC handle. If not specified an auto-handle is used.
      * @return self
      */
-    public function __construct( $value )
+    public function __construct( $value = 'AUTO-1' )
     {
         $this->init();
-        $this->setType( 'irt' );
+        $this->setType( 'person' );
         $this->setKey( [
-            'irt' => $value,
+            'nic-hdl' => $value,
         ] );
     }
 
     /**
-     * Defines attributes for the IRT RPSL object. 
+     * Defines attributes for the PERSON RPSL object. 
      * 
      * @return void
      */
     protected function init()
     {
-        $this->create( 'irt', Attr::REQUIRED, Attr::SINGLE );               # 1 +
+        $this->create( 'person', Attr::REQUIRED, Attr::SINGLE );            # 1 +
         $this->create( 'address', Attr::REQUIRED, Attr::MULTIPLE );         # m +
-        $this->create( 'phone', Attr::OPTIONAL, Attr::MULTIPLE )            # m
+        $this->create( 'country', Attr::REQUIRED, Attr::SINGLE );           # 1 +
+        $this->create( 'phone', Attr::REQUIRED, Attr::MULTIPLE )            # m +
             ->apply( [$this, 'validatePhone'] );
         $this->create( 'fax-no', Attr::OPTIONAL, Attr::MULTIPLE )           # m
             ->apply( [$this, 'validatePhone'] );
         $this->create( 'e-mail', Attr::REQUIRED, Attr::MULTIPLE )           # m +
             ->apply( [$this, 'validateEmail'] );
-        $this->create( 'abuse-mailbox', Attr::REQUIRED, Attr::MULTIPLE )    # m +
-            ->apply( [$this, 'validateEmail'] );
-        $this->create( 'signature', Attr::OPTIONAL, Attr::MULTIPLE );       # m
-        $this->create( 'encryption', Attr::OPTIONAL, Attr::MULTIPLE );      # m
         $this->create( 'org', Attr::OPTIONAL, Attr::MULTIPLE );             # m
-        $this->create( 'admin-c', Attr::REQUIRED, Attr::MULTIPLE );         # m +
-        $this->create( 'tech-c', Attr::REQUIRED, Attr::MULTIPLE );          # m +
-        $this->create( 'auth', Attr::REQUIRED, Attr::MULTIPLE );            # m +
+        $this->create( 'nic-hdl', Attr::REQUIRED, Attr::SINGLE )            # 1 +
+            ->apply( 'strtoupper' );
         $this->create( 'remarks', Attr::OPTIONAL, Attr::MULTIPLE );         # m
-        $this->create( 'irt-nfy', Attr::OPTIONAL, Attr::MULTIPLE )          # m
-            ->apply( [$this, 'validateEmail'] );
         $this->create( 'notify', Attr::OPTIONAL, Attr::MULTIPLE );          # m
+        $this->create( 'abuse-mailbox', Attr::OPTIONAL, Attr::MULTIPLE )    # m
+            ->apply( [$this, 'validateEmail'] );
         $this->create( 'mnt-by', Attr::REQUIRED, Attr::MULTIPLE );          # m +
         $this->create( 'source', Attr::REQUIRED, Attr::SINGLE )             # 1 +
             ->apply( 'strtoupper' );

@@ -1,44 +1,46 @@
 <?php
-// AsBlock.php
+// RtrSet.php
 
 namespace Dormilich\APNIC\RPSL;
 
-use Dormilich\APNIC\Object;
+use Dormilich\APNIC\AbstractObject;
 use Dormilich\APNIC\AttributeInterface as Attr;
 
-class AsBlock extends Object
+class RtrSet extends AbstractObject
 {
     const VERSION = '1.88';
 
     /**
-     * Create a AS-BLOCK object.
+     * Create a RTR-SET RPSL object.
      * 
-     * @param string $value The range of AS numbers in this block.
+     * @param string $value The name of the set.
      * @return self
      */
-    public function __construct( $value )
+    public function __construct($value)
     {
         $this->init();
-        $this->setType( 'as-block' );
+        $this->setType( 'rtr-set' );
         $this->setKey( [
-            'as-block' => $value,
+            'rtr-set' => $value,
         ] );
     }
 
     /**
-     * Defines attributes for the AS-BLOCK RPSL object. 
+     * Defines attributes for the RTR-SET RPSL object. 
      * 
      * @return void
      */
     protected function init()
     {
-        $this->create( 'as-block', Attr::REQUIRED, Attr::SINGLE );          # 1 +
-        $this->create( 'descr', Attr::OPTIONAL, Attr::MULTIPLE );           # m
+        $this->create( 'rtr-set', Attr::REQUIRED, Attr::SINGLE );           # 1 +
+        $this->create( 'descr', Attr::REQUIRED, Attr::MULTIPLE );           # m +
+        $this->create( 'members', Attr::OPTIONAL, Attr::MULTIPLE );         # m
+        $this->create( 'mp-members', Attr::OPTIONAL, Attr::MULTIPLE );      # m
+        $this->create( 'mbrs-by-ref', Attr::OPTIONAL, Attr::MULTIPLE );     # m
         $this->create( 'remarks', Attr::OPTIONAL, Attr::MULTIPLE );         # m
-        $this->create( 'country', Attr::OPTIONAL, Attr::SINGLE );           # 1
         $this->create( 'org', Attr::OPTIONAL, Attr::MULTIPLE );             # m
-        $this->create( 'admin-c', Attr::REQUIRED, Attr::MULTIPLE );         # m +
         $this->create( 'tech-c', Attr::REQUIRED, Attr::MULTIPLE );          # m +
+        $this->create( 'admin-c', Attr::REQUIRED, Attr::MULTIPLE );         # m +
         $this->create( 'notify', Attr::OPTIONAL, Attr::MULTIPLE );          # m
         $this->create( 'mnt-by', Attr::REQUIRED, Attr::MULTIPLE );          # m +
         $this->create( 'mnt-lower', Attr::OPTIONAL, Attr::MULTIPLE );       # m

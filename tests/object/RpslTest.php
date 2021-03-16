@@ -1,7 +1,7 @@
 <?php
 
+use Dormilich\APNIC\Exceptions\InvalidValueException;
 use Dormilich\APNIC\RPSL as RPSL;
-use Dormilich\APNIC\AttributeInterface as Attr;
 use PHPUnit\Framework\TestCase;
 
 class RpslTest extends TestCase
@@ -30,12 +30,11 @@ class RpslTest extends TestCase
         $this->assertEquals(['aut-num'], $obj->getPrimaryKeyNames());
     }
 
-    /**
-     * @expectedException \Dormilich\APNIC\Exceptions\InvalidValueException
-     * @expectedExceptionMessage Invalid AS number
-     */
     public function testAutNumWithInvalidAsnFails()
     {
+        $this->expectException(InvalidValueException::class);
+        $this->expectExceptionMessage('Invalid AS number');
+
         new RPSL\AutNum('test');
     }
 
@@ -55,12 +54,11 @@ class RpslTest extends TestCase
         $this->assertEquals(['domain'], $obj->getPrimaryKeyNames());
     }
 
-    /**
-     * @expectedException \Dormilich\APNIC\Exceptions\InvalidValueException
-     * @expectedExceptionMessage Invalid reverse delegation
-     */
     public function testDomainWithInvalidAddressFails()
     {
+        $this->expectException(InvalidValueException::class);
+        $this->expectExceptionMessage('Invalid reverse delegation');
+
         new RPSL\Domain('test');
     }
 
@@ -72,12 +70,11 @@ class RpslTest extends TestCase
         $this->assertEquals(['filter-set'], $obj->getPrimaryKeyNames());
     }
 
-    /**
-     * @expectedException \Dormilich\APNIC\Exceptions\InvalidValueException
-     * @expectedExceptionMessage Invalid filter-set name
-     */
     public function testFilterSetWithInvalidNameFails()
     {
+        $this->expectException(InvalidValueException::class);
+        $this->expectExceptionMessage('Invalid filter-set name');
+
         new RPSL\FilterSet('test');
     }
 
@@ -104,20 +101,20 @@ class RpslTest extends TestCase
 
     /**
      * @dataProvider invalidIP6Addresses
-     * @expectedException \Dormilich\APNIC\Exceptions\InvalidValueException
-     * @expectedExceptionMessage Invalid IPv6 address range
      */
     public function testInet6numWithInvalidAddressFails($address)
     {
+        $this->expectException(InvalidValueException::class);
+        $this->expectExceptionMessage('Invalid IPv6 address range');
+
         new RPSL\Inet6num($address);
     }
 
-    /**
-     * @expectedException \Dormilich\APNIC\Exceptions\InvalidValueException
-     * @expectedExceptionMessage Invalid status for the Inet6num object
-     */
     public function testInet6numWithInvalidStatusFails()
     {
+        $this->expectException(InvalidValueException::class);
+        $this->expectExceptionMessage('Invalid status for the Inet6num object');
+
         $obj = new RPSL\Inet6num('2001:0DB8::/32');
         $obj['status'] = 'invalid status';
     }
@@ -153,29 +150,28 @@ class RpslTest extends TestCase
 
     /**
      * @dataProvider invalidIP4Cidr
-     * @expectedException \Dormilich\APNIC\Exceptions\InvalidValueException
-     * @expectedExceptionMessage Invalid IPv4 CIDR
      */
     public function testInetnumWithInvalidAddressFails($cidr)
     {
+        $this->expectException(InvalidValueException::class);
+        $this->expectExceptionMessage('Invalid IPv4 CIDR');
+
         new RPSL\Inetnum($cidr);
     }
 
-    /**
-     * @expectedException \Dormilich\APNIC\Exceptions\InvalidValueException
-     * @expectedExceptionMessage Invalid IPv4 address range
-     */
     public function testInetnumWithInvalidIPsFails()
     {
+        $this->expectException(InvalidValueException::class);
+        $this->expectExceptionMessage('Invalid IPv4 address range');
+
         new RPSL\Inetnum('test');
     }
 
-    /**
-     * @expectedException \Dormilich\APNIC\Exceptions\InvalidValueException
-     * @expectedExceptionMessage Invalid status for the Inetnum object
-     */
     public function testInetnumWithInvalidStatusFails()
     {
+        $this->expectException(InvalidValueException::class);
+        $this->expectExceptionMessage('Invalid status for the Inetnum object');
+
         $obj = new RPSL\Inetnum('192.168.1.0/24');
         $obj['status'] = 'invalid status';
     }
@@ -189,12 +185,11 @@ class RpslTest extends TestCase
         $this->assertEquals(['inet-rtr'], $obj->getPrimaryKeyNames());
     }
 
-    /**
-     * @expectedException \Dormilich\APNIC\Exceptions\InvalidValueException
-     * @expectedExceptionMessage Invalid AS number
-     */
     public function testInetRtrWithInvalidAsnFails()
     {
+        $this->expectException(InvalidValueException::class);
+        $this->expectExceptionMessage('Invalid AS number');
+
         $obj = new RPSL\InetRtr('test');
         $obj['local-as'] = 'NaN';
     }
@@ -215,12 +210,11 @@ class RpslTest extends TestCase
         $this->assertEquals(['key-cert'], $obj->getPrimaryKeyNames());
     }
 
-    /**
-     * @expectedException \Dormilich\APNIC\Exceptions\InvalidValueException
-     * @expectedExceptionMessage Invalid key-cert ID
-     */
     public function testKeyCertWithInvalidKeyFails()
     {
+        $this->expectException(InvalidValueException::class);
+        $this->expectExceptionMessage('Invalid key-cert ID');
+
         new RPSL\KeyCert('test');
     }
 
@@ -256,7 +250,6 @@ class RpslTest extends TestCase
             ->set('tech-c', 'TEST-APNIC')
             ->set('admin-c', 'TEST-APNIC')
             ->set('mnt-by', 'MAINT-EU-TEST')
-            ->set('changed', 'hostmaster@example.com')
             ->set('source', 'APNIC')
         ;
         // either peering attribute makes it valid:
@@ -272,12 +265,11 @@ class RpslTest extends TestCase
         $this->assertTrue($obj->isValid());
     }
 
-    /**
-     * @expectedException \Dormilich\APNIC\Exceptions\InvalidValueException
-     * @expectedExceptionMessage Invalid peering-set name
-     */
     public function testPeeringSetWithInvalidKeyFails()
     {
+        $this->expectException(InvalidValueException::class);
+        $this->expectExceptionMessage('Invalid peering-set name');
+
         new RPSL\PeeringSet('test');
     }
 
@@ -330,39 +322,35 @@ class RpslTest extends TestCase
         $this->assertSame($src->getHandle(), $obj->getHandle());
     }
 
-    /**
-     * @expectedException \Dormilich\APNIC\Exceptions\InvalidValueException
-     * @expectedExceptionMessage Invalid IPv4 route
-     */
     public function testRouteWithInvalidAddressFails()
     {
+        $this->expectException(InvalidValueException::class);
+        $this->expectExceptionMessage('Invalid IPv4 route');
+
         new RPSL\Route('2001:0DB8::/32AS135');
     }
 
-    /**
-     * @expectedException \Dormilich\APNIC\Exceptions\InvalidValueException
-     * @expectedExceptionMessage Invalid IPv4 route
-     */
     public function testRouteWithInvalidIPv4CidrFails()
     {
+        $this->expectException(InvalidValueException::class);
+        $this->expectExceptionMessage('Invalid IPv4 route');
+
         new RPSL\Route('192.168.1.0/44AS135'); // prefix length too large
     }
 
-    /**
-     * @expectedException \Dormilich\APNIC\Exceptions\InvalidValueException
-     * @expectedExceptionMessage Invalid AS number
-     */
     public function testRouteWithInvalidAsnFails()
     {
-        $obj = new RPSL\Route('192.168.1.0/24ASN');
+        $this->expectException(InvalidValueException::class);
+        $this->expectExceptionMessage('Invalid AS number');
+
+        new RPSL\Route('192.168.1.0/24ASN');
     }
 
-    /**
-     * @expectedException \Dormilich\APNIC\Exceptions\InvalidValueException
-     * @expectedExceptionMessage Invalid AS number
-     */
     public function testEditRouteWithInvalidOriginFails()
     {
+        $this->expectException(InvalidValueException::class);
+        $this->expectExceptionMessage('Invalid AS number');
+
         $obj = new RPSL\Route('192.168.1.0/24AS135');
         $obj['origin'] = 'ASN';
     }
@@ -400,30 +388,27 @@ class RpslTest extends TestCase
         $this->assertSame($src->getHandle(), $obj->getHandle());
     }
 
-    /**
-     * @expectedException \Dormilich\APNIC\Exceptions\InvalidValueException
-     * @expectedExceptionMessage Invalid IPv6 route
-     */
     public function testRoute6WithInvalidAddressFails()
     {
+        $this->expectException(InvalidValueException::class);
+        $this->expectExceptionMessage('Invalid IPv6 route');
+
         new RPSL\Route6('abcx:759/24AS135');
     }
 
-    /**
-     * @expectedException \Dormilich\APNIC\Exceptions\InvalidValueException
-     * @expectedExceptionMessage Invalid AS number
-     */
     public function testRoute6WithInvalidAsnFails()
     {
-        $obj = new RPSL\Route6('2001:0DB8::/32ASN');
+        $this->expectException(InvalidValueException::class);
+        $this->expectExceptionMessage('Invalid AS number');
+
+        new RPSL\Route6('2001:0DB8::/32ASN');
     }
 
-    /**
-     * @expectedException \Dormilich\APNIC\Exceptions\InvalidValueException
-     * @expectedExceptionMessage Invalid AS number
-     */
     public function testEditRoute6WithInvalidOriginFails()
     {
+        $this->expectException(InvalidValueException::class);
+        $this->expectExceptionMessage('Invalid AS number');
+
         $obj = new RPSL\Route6('2001:0DB8::/32AS135');
         $obj['origin'] = 'ASN';
     }

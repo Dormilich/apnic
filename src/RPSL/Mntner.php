@@ -3,10 +3,10 @@
 
 namespace Dormilich\APNIC\RPSL;
 
-use Dormilich\APNIC\Object;
+use Dormilich\APNIC\AbstractObject;
 use Dormilich\APNIC\AttributeInterface as Attr;
 
-class Mntner extends Object
+class Mntner extends AbstractObject
 {
     const VERSION = '1.88';
 
