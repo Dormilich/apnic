@@ -50,7 +50,7 @@ class Mntner extends AbstractObject
         $this->create( 'abuse-mailbox', Attr::OPTIONAL, Attr::MULTIPLE )    # m
             ->apply( [$this, 'validateEmail'] );
         $this->create( 'mnt-by', Attr::REQUIRED, Attr::MULTIPLE );          # m +
-        $this->create( 'referral-by', Attr::OPTIONAL, Attr::SINGLE );       # 1 +
+        $this->create( 'referral-by', Attr::OPTIONAL, Attr::SINGLE );       # 1
         $this->create( 'source', Attr::REQUIRED, Attr::SINGLE )             # 1 +
             ->apply( 'strtoupper' );
 
