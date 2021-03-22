@@ -53,6 +53,7 @@ class Inetnum extends AbstractObject
         $this->create( 'org', Attr::OPTIONAL, Attr::SINGLE );               # 1
         $this->create( 'admin-c', Attr::REQUIRED, Attr::MULTIPLE );         # m +
         $this->create( 'tech-c', Attr::REQUIRED, Attr::MULTIPLE );          # m +
+        $this->create( 'abuse-c', Attr::OPTIONAL, Attr::SINGLE );           # 1
         $this->create( 'status', Attr::REQUIRED, Attr::SINGLE );            # 1 +
         $this->create( 'remarks', Attr::OPTIONAL, Attr::MULTIPLE );         # m
         $this->create( 'notify', Attr::OPTIONAL, Attr::MULTIPLE );          # m
