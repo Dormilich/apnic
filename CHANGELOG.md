@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.3.0
+
+- Updated object definitions according to what was found in the live database (version 1.88.15-45).
+- Added `abuse-c` attribute in the `aut-num`, `inetnum`, and `inet6num` objects.
+
 ## 1.2.0
 
 - BC Break: Dropped support for PHP 5

@@ -42,9 +42,9 @@ class Organisation extends AbstractObject
         $this->create( 'phone', Attr::OPTIONAL, Attr::MULTIPLE )            # m
             ->apply( [$this, 'validatePhone'] );
         $this->create( 'fax-no', Attr::OPTIONAL, Attr::MULTIPLE )           # m
-            ->apply( [$this, 'validateEmail'] );
-        $this->create( 'e-mail', Attr::REQUIRED, Attr::MULTIPLE )           # m +
             ->apply( [$this, 'validatePhone'] );
+        $this->create( 'e-mail', Attr::REQUIRED, Attr::MULTIPLE )           # m +
+            ->apply( [$this, 'validateEmail'] );
         $this->create( 'org', Attr::OPTIONAL, Attr::MULTIPLE );             # m
         $this->create( 'admin-c', Attr::OPTIONAL, Attr::MULTIPLE );         # m
         $this->create( 'tech-c', Attr::OPTIONAL, Attr::MULTIPLE );          # m

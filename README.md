@@ -2,10 +2,6 @@
 
 A PHP library to read, write, and validate APNIC RPSL objects.
 
-## APNIC WHOIS Database Update
-
-APNIC has announced to update the WHOIS database from version 1.69 to 1.88 ([APNIC Whois upgrade](https://www.apnic.net/about-apnic/whois_search/whois-upgrade/)) in the first week of July 2017 at wich point the 1.0 branch will cease working when reading the newer objects. You need to update to the 1.1 branch that contains the updated RPSL specifications.
-
 ## Reading Objects
 
 The utility class `WhoisParser` can read the output retrieved from the `whois` command and turn it into RPSL objects.
